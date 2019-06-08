@@ -1,0 +1,21 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  site_id: 
+  results_count: 1
+  datetime_results_count_last_updated: 2017-11-16 20:20:39
+  category_id: 
+  price_min: 1.5
+  price_max: 1.5
+  slug: MyString
+  location: MyString
+
+two:
+  site_id: 
+  results_count: 1
+  datetime_results_count_last_updated: 2017-11-16 20:20:39
+  category_id: 
+  price_min: 1.5
+  price_max: 1.5
+  slug: MyString
+  location: MyString

@@ -1,0 +1,58 @@
+- featured = false if local_assigns[:featured].nil?
+- display_ribbon = false if local_assigns[:display_ribbon].nil?
+- display_thumbnails = true if local_assigns[:display_thumbnails].nil?
+- display_photos = true if local_assigns[:display_photos].nil?
+- display_tags = true if local_assigns[:display_tags].nil?
+- display_price = true if local_assigns[:display_price].nil?
+- display_timer = false if local_assigns[:display_timer].nil?
+- display_social = false if local_assigns[:display_social].nil?
+- display_location = true if local_assigns[:display_location].nil?
+- display_description = false if local_assigns[:display_description].nil?
+- parent_blank = false if local_assigns[:parent_blank].nil?
+.listing.grid-x.z.radius-10{ :class => featured ? "featured" : nil }
+	- if display_photos
+		%a.cell.small-12.grid-x.hide{ class: listing.photos.at(0) ? 'photos no-photos' : 'photos', :href=>listing_path(listing), target: parent_blank ? "_blank" : nil }
+			- if listing.photos.at(0)
+				%img{src: listing.photos.at(0).url }
+			- else
+				-# %img{src: asset_path("account-listings-add-photo-large.png") }
+				%img{src: photos.sample }
+	.cell.small-12.controls.text-align-right
+		- if can? :manage, listing
+			%a.control.ss-icon{href: edit_account_listing_path(listing) } edit
+			= link_to 'delete',  account_listing_path(listing),  method: :delete, data: { confirm: 'Are you sure you want to delete this listing?' }, class: 'ss-icon control'
+		%a.control.hide.ss-icon favorite
+		%a.category.z.radius-10
+			%strong
+				= listing.category.name
+	.cell.small-12.details.padding-20
+		%h3
+			%a.title{:href=>listing_path(listing), title: listing.title, target: parent_blank ? "_blank" : nil  }
+				= listing.title_dynamic
+		- if display_price
+			%a.price.z.radius-10
+				%strong
+					PRICE:
+					= listing.price
+				- if listing.price_unit_formatted
+					%span
+						= listing.price_unit_formatted
+		- if display_location
+			%a.location.opacity-75>
+				%strong
+					%i.ss-icon.opacity-75 location
+					= listing.safe_address
+				- if location && location.latitude
+					%small.opacity-75
+						(About #{listing.distance_from([location.latitude,location.longitude]).ceil} miles away)
+		- if display_description
+			.description
+				= truncate listing.description, length: 360
+		- if display_timer
+			.timer.opacity-50
+				Updated
+				= time_ago_in_words(listing.edited_at || listing.updated_at)
+				ago
+	%a.cell.small-12.link-bar.padding-10{:href=>listing_path(listing)}
+		Contact Seller
+		→

@@ -1,0 +1,139 @@
+= content_for :account_header_content do
+	%strong Below are your listings.
+	%span To edit a listing simply click the listing you'd like to edit.
+
+= content_for :account_content do
+	.listings.grid-x.align-top.grid-margin-x
+		- if !@listings.blank?
+			%h2.title.cell.small-12.medium-auto
+				My Listings
+				%span.text-muted (#{ @listings.count })
+			.control.cell.small-6.medium-shrink
+				%a.button.hollow.small.secondary.cell{:href=>new_account_listing_path}
+					%i.ss-icon.ss-tag.show-for-medium
+					%span.show-for-medium Create
+					New Listing
+			.control.cell.small-6.medium-shrink
+				%a.button.hollow.small.cell{:href=>renew_account_listings_path}
+					%i.ss-icon.ss-refresh.show-for-medium
+					Renew All
+					%span.show-for-medium Listings
+			.listings.cell.small-12.grid-x.m-top-20
+				- @listings.each do |listing|
+					.cell.small-12
+						.card
+							.card-content
+								.card-image
+									%img{src: listing.photos.at(0) ? listing.photos.at(0).url : asset_path("account-listings-add-photo-large.png") }
+									%span.tag-category #{ listing.category ? listing.category.name : 'For Sale' }
+								.card-section
+									%h4.cell
+										%a{:href=>listing_path(listing), title: listing.title, target: true ? "_blank" : nil  }
+											= listing.title_dynamic
+										%small.text-muted.right
+											= time_ago_in_words(listing.edited_at || listing.updated_at)
+											ago
+									%p
+										%i.icon.location
+										= listing.safe_address
+										- if location && location.latitude && listing.distance_from([location.latitude,location.longitude])
+											%span.text-muted
+												(About #{listing.distance_from([location.latitude,location.longitude]).ceil} miles away)
+									%p
+										%span.text-blue
+											= humanized_money_with_symbol listing.price
+										- if listing.price_unit
+											= listing.price_unit
+							.card-controls
+								- if can? :manage, listing
+									%a.control{href: edit_account_listing_path(listing) }
+										%i.ss-icon settings
+										edit listing
+								- if can? :manage, listing
+									%a.control(target="_blank"){href: listing_path(listing) }
+										%i.ss-icon view
+										preview listing
+								- if can? :manage, listing
+									%a.control{href: renew_account_listing_path(listing) }
+										%i.ss-icon refresh
+										renew listing
+								- if can? :manage, listing
+									%a.control.delete.right(data-method="DELETE" data-confirm="Are you sure you want to delete this listing?"){href: account_listing_path(listing)}
+										%i.ss-icon trash
+										delete
+							- if false
+								- if !listing.billing_active
+									.card-cta.grid-x.warning
+										.cell.auto
+											%h4
+												This listing is
+												%strong
+													not active
+												because your've maxed out your plan.
+											%p.text-muted
+												Upgrade to keep adding more listings.
+										.cell.shrink
+											%a.magic-button.small(ng-click="SessionService.openModal('subscription.html')") Manage Plan
+								- else
+									.card-cta.grid-x
+										.cell.auto
+											- if listing.is_featured?
+												%h4
+													This listing is featured with
+													%span.text-green
+														= listing.boost_level.label.downcase
+														level boost
+													and renews every
+													%span.text-green
+														= listing.boost_interval.label.downcase
+												%p
+													Your card will be billed an additional #{ humanized_money_with_symbol(listing.boost_interval.term*listing.boost_level.price/100) }
+													for each renewal
+											- else
+												%h4
+													This listing is not featured. Make it featured to get more visitors.
+												%p.text-muted
+													Featured listings appear at the top of all listings
+										- if !listing.is_featured?
+											.cell.shrink
+												%a.magic-button.secondary.small Make Featured
+			= will_paginate @listings, class: "custom_pagination cell text-center", previous_label: '', next_label: ''
+		-else
+			.cell.small-12.card.card-round
+				.grid-x.grid-padding-x
+					.large-12.cell.text-center
+						%h4.m-0
+							%strong Ready to sell on #{ current_site.name }?
+						%p Trusted by business just like yours.
+					.large-12.medium-12.cell.m-top-20
+						.feature-item
+							.media-object
+								.media-object-section
+									%img{:src => asset_path("icon-01.png")}/
+								.media-object-section
+									%h4 Its Ultra - Fast!
+									%p You can post your listing in minutes. All we need is a few details about what you're selling.
+					.large-12.medium-12.cell
+						.feature-item
+							.media-object
+								.media-object-section
+									%img{:src => asset_path("icon-02.png")}/
+								.media-object-section
+									%h4 Its Safer!
+									%p Our network helps to keep your personal details secure. Shielded from reaching third parties.
+					.large-12.medium-12.cell
+						.feature-item
+							.media-object
+								.media-object-section
+									%img{:src => asset_path("icon-03.png")}/
+								.media-object-section
+									%h4 It's Free!
+									%p Our free classifieds help you save money and promote your listing. Get started selling now!
+						.grid-x.m-top-50
+							.cell.auto
+							.cell.shrink
+								%a.magic-button.secondary{:href=>new_account_listing_path}
+									%i.ss-icon.ss-tag
+									Create Your Listing
+							.cell.auto
+= render :file => 'account/account'

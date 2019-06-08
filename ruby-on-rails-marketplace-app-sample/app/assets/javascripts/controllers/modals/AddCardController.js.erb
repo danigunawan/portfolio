@@ -1,0 +1,77 @@
+angular.module('market')
+	.controller('market.modals.AddCardController', function ($scope, $http, $timeout, $q) {
+		$scope.card = {};
+		$scope.processing = false;
+
+		$scope.validateCard = function() {
+			return true;
+		}
+
+		$scope.saveCard = function(event) {
+			// Set stripe key for js api.
+			$scope.processing = true;
+
+			if (!$scope.use_existing_card) {
+				// Create the Stripe card token.
+				Stripe.card.createToken({
+					name: $scope.card.name,
+					address_line1: $scope.card.address_line1,
+					address_zip: $scope.card.address_zip,
+					number: $scope.card.number,
+					cvc: $scope.card.cvc,
+					exp_month: $scope.card.exp_month,
+					exp_year: $scope.card.exp_year
+				}, function stripeResponseHandler(status, response) {
+					// Show the errors on the form
+					if (response.error) { // Problem!
+						$scope.stripe_error_message = response.error.message;
+						$scope.processing = false;
+					} else { // Token was created!
+						// Get the token ID and update in the form.
+						$scope.card.stripe_token = response.id;
+
+						// Process once.
+						if (response.id) {
+							$http.put(
+								'/account/billing.json',
+								{
+									plan_id: $scope.plan_id,
+									stripe_token: response.id,
+									use_existing_card: $scope.use_existing_card
+								}
+							).then(function successCallback(response) {
+								// this callback will be called asynchronously
+								// when the response is available
+								$scope.processing = false;
+								document.location = document.location.pathname
+							}, function errorCallback(response) {
+								// called asynchronously if an error occurs
+								// or server returns response with an error status.
+								$scope.processing = false;
+							});
+							$scope.processing = true;
+						}
+					}
+				});
+			} else {
+				$http.put(
+					'/account/billing.json',
+					{
+						plan_id: $scope.plan_id,
+						use_existing_card: $scope.use_existing_card
+					}
+				).then(function successCallback(response) {
+					// this callback will be called asynchronously
+					// when the response is available
+					$scope.processing = false;
+					document.location = document.location.pathname
+				}, function errorCallback(response) {
+					// called asynchronously if an error occurs
+					// or server returns response with an error status.
+					$scope.processing = false;
+				});
+				$scope.processing = true;
+			}
+
+		}
+	})

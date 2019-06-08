@@ -1,0 +1,53 @@
+%footer
+	.grid-container
+		.grid-x.grid-padding-x
+			.large-4.medium-4.cell
+				.footer-logo
+					%a.logo{:href => root_path}
+						#{current_site.name}
+				%ul.vertical.menu.menu-green
+					%li
+						%a.underline(ng-click="SessionService.openModal('help.html')") Need help? Get in touch!
+			.large-3.medium-4.cell
+				%h3 FOR SELLERS
+				%ul.vertical.menu
+					%li
+						%a{:href => new_account_listing_path} Add Your Listing
+					%li
+						%a{:href => terms_path} Terms &amp; Conditions
+			.large-3.medium-4.cell
+				%h3 COMPANY
+				%ul.vertical.menu
+					%li
+						%a{:href => about_path} About #{ current_site.name }
+					- if current_site.blogging_enabled
+						%li
+							%a{:href => posts_path} Blog
+			.large-2.medium-12.cell
+				%ul.list-social
+					- if !current_site.env["LINKEDIN_URL"].blank?
+						%li
+							%a{:href => current_site.env["LINKEDIN_URL"], :target => "_blank"}
+								%i.flaticon-linkedin
+					- if !current_site.env["FACEBOOK_URL"].blank?
+						%li
+							%a{:href => current_site.env["FACEBOOK_URL"], :target => "_blank"}
+								%i.flaticon-facebook
+					- if !current_site.env["TWITTER_URL"].blank?
+						%li
+							%a{:href => current_site.env["TWITTER_URL"], :target => "_blank"}
+								%i.flaticon-twitter
+.legal
+	.grid-container
+		.grid-x.grid-margin-x
+			.copyright.cell.auto
+				Copyright ©
+				= Time.now.year
+				= current_site.name + ','
+				All rights reserved.
+			.terms.cell.shrink
+				Use of this site constitutes agreement with our
+				%a{ href: privacy_path } privacy
+				&
+				%a{ href: terms_path } terms
+				policies.

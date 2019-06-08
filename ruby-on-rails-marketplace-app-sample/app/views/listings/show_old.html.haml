@@ -1,0 +1,266 @@
+= content_for :title do
+	#{ @listing.category_name } For Sale - #{ title(@listing.title) } | #{ current_site.name }
+
+- content_for :description do
+	#{ @listing.price } #{ @listing.price_unit_formatted ? @listing.price_unit_formatted : '' } – #{ @listing.safe_address } | #{ @listing.description } – Search more #{ @listing.category_name.downcase } for sale on #{ current_site.name }
+
+= content_for :content do
+
+	= render 'layouts/header'
+	%section.section.product-detail(ng-controller="market.ShowListingController")
+		.product-main-info.show-for-large
+			.grid-container
+				.grid-x.grid-padding-x
+					.cell
+						%h4
+							%span.text-blue
+								= @listing.price
+							- if @listing.price_unit_formatted
+								= @listing.price_unit_formatted
+						%h1 #{@listing.title.titleize}
+						.location
+							%i.flaticon-signs
+							= @listing.safe_address
+							- if location && location.latitude && @listing.distance_from([location.latitude,location.longitude])
+								%span.text-muted
+									(#{@listing.distance_from([location.latitude,location.longitude]).ceil} miles away)
+
+		/ /.product-main-info
+		.product-mediamap
+			.grid-container
+				.grid-x
+					- if !@listing.listing_photos.blank?
+						.medium-auto.cell
+							.product-media
+								.slider-for
+									- @listing.listing_photos.map(&:photo).each do |photo|
+										%div
+											%img.ng-cloak{:src => photo.url}/
+								.slider-nav
+									- @listing.listing_photos.map(&:photo).each do |photo|
+										%div
+											.slider-thumb
+												%img.ng-cloak{:src => photo.url}/
+					- else
+						.medium-auto.cell
+							.product-map-container
+								#product-map
+								.location
+									%i.flaticon-signs>
+									= @listing.safe_address
+									- if location && location.latitude && @listing.distance_from([location.latitude,location.longitude])
+										%span.text-muted
+											(#{@listing.distance_from([location.latitude,location.longitude]).ceil} miles away)
+
+					.cell.product-main-info.hide-for-large
+						.grid-container
+							.grid-x.grid-padding-x
+								.cell
+									%h4
+										%span.text-blue
+											= @listing.price
+										- if @listing.price_unit_formatted
+											= @listing.price_unit_formatted
+									%h1 #{@listing.title.titleize}
+									.location
+										%i.flaticon-signs
+										= @listing.safe_address
+										- if location && location.latitude && @listing.distance_from([location.latitude,location.longitude])
+											%span.text-muted
+												(#{@listing.distance_from([location.latitude,location.longitude]).ceil} miles away)
+
+					.cell.medium-shrink.right-column
+						= render "layouts/ads/carbon/right_rail_300_250"
+						- if current_user && favorite = current_user.favorites.where(listing_id: @listing.id).first
+							%a.button.secondary.expanded.m-top-20(data-method="DELETE"){href: account_favorite_path(favorite)}
+								%i.ss-icon.ss-heart
+								%strong Remove Favorites
+						- else
+							%a.button.success.expanded.m-top-20(data-method="POST"){href: account_favorites_path.add_param_to_uri('listing_id', @listing.id)}
+								%i.ss-icon.ss-heart
+								%strong Favorite Listing
+
+
+		.product-description
+			.grid-container
+				.grid-x.grid-padding-x
+					.cell
+						%h4.aslabel Description
+						%p #{@listing.description}
+				.grid-x.grid-padding-x
+					.cell.small-12.large-12
+						.grid-x.grid-padding-x
+							.cell.small-12.large-4
+								%h4.aslabel
+									Price
+								%p
+									= @listing.price
+									- if @listing.price_unit_formatted
+										= @listing.price_unit_formatted
+							- if @listing.category_attribute_values.count > 0
+								- @listing.category_attribute_values.each_with_index do |i, index|
+									- if i.category_attribute
+										.cell.small-12.large-4
+											%h4.aslabel
+												= i.category_attribute.name
+											%p
+												- if i.category_attribute.boolean
+													= i.float_value == 1.0 ? "Yes" : "No"
+												- else
+													= i.value
+					.cell
+						.ad-well
+							= render "layouts/ads/carbon/top_leader_728_90"
+		/ /.product-description
+		.product-contact
+			- if false
+				.grid-container
+					.grid-x.grid-padding-x
+						.large-5.medium-6.large-offset-1.cell.small-text-center
+							%a.button.medium{href: @listing.contact_phone.blank? ? nil : ("tel:" + @listing.contact_phone.to_s.gsub(/[a-zA-Z\,\s\-]/,''))}
+								- if !@listing.contact_phone.blank?
+									%i.flaticon-phone-call
+									= @listing.contact_phone
+								- else
+									%i.ss-icon email
+									= @listing.contact_email
+						.large-5.medium-6.cell.medium-text-right.small-text-center
+							.user.m-top-10
+								%i.flaticon-avatar
+								= @listing.contact_name
+			- if false && !current_user
+				.grid-container
+					.grid-x.grid-padding-x
+						.large-5.medium-6.large-offset-1.cell.small-text-center
+							%a.button.medium(data-method="POST"){href: listing_path.add_param_to_uri('listing_id', @listing.id)}
+								Contact Seller
+								%i.flaticon-long-arrow-right
+						.large-5.medium-6.cell.medium-text-right.small-text-center
+							.user.m-top-10
+								%i.flaticon-avatar
+								= @listing.contact_name
+			- if true
+				= form_tag contact_listing_path(@listing), method: :post do
+					.grid-container
+						.grid-x.grid-padding-x
+							.large-5.medium-6.large-offset-1.cell
+								%h3.h3.strong Contact Seller
+							.large-5.medium-6.cell.text-right.small-text-left
+								.user
+									%i.flaticon-avatar
+									= @listing.contact_name
+						.grid-x.grid-padding-x
+							.large-4.medium-4.large-offset-1.cell
+								.card.card-round
+									%label.aslabel.mb0
+										YOUR NAME
+										%input.input-nob{:name => "listing_message[name]", :placeholder => "Your name", :type => "text", :value => current_user ? current_user.full_name : ''}/
+							.large-3.medium-4.cell
+								.card.card-round
+									%label.aslabel.mb0
+										Your phone number
+										%input.input-nob{:name => "listing_message[phone]", :placeholder => "Your phone number", :type => "text", :value => current_user ? current_user.contact_phone : ''}/
+							.large-3.medium-4.cell
+								.card.card-round
+									%label.aslabel.mb0
+										Your email
+										%input.input-nob{:name => "listing_message[from_email]", :placeholder => "Your email", :type => "email", :value => current_user ? current_user.email : ''}/
+							.large-10.large-offset-1.cell
+								.card.card-round
+									%label.aslabel.mb0
+										Message
+										%textarea.input-nob{:name => "listing_message[body]", :placeholder => "Your message", :rows => "3"}
+							.large-10.large-offset-1.cell
+								.form-action.grid-x.grid-margin-x
+									.cell.small-12.medium-6.m-top-20
+										%button.button.success.medium.cell{:type => "submit"}
+											Send Message
+											%i.flaticon-long-arrow-right
+									.cell.small-12.medium-6.m-top-20
+										%a.button.btn-border-blue.medium.cell.small-12.medium-6.hide{:href => "#"}
+											%i.flaticon-phone-call
+											Call The Seller
+			- if !@listing.listing_photos.blank?
+				.grid-container.m-top-50
+					.grid-x.grid-padding-x
+						.medium-12.large-10.cell.large-offset-1
+							.product-map-container
+								#product-map
+								.location
+									%i.flaticon-signs>
+									= @listing.safe_address
+									- if location && location.latitude && @listing.distance_from([location.latitude,location.longitude])
+										%span.text-muted
+											(#{@listing.distance_from([location.latitude,location.longitude]).ceil} miles away)
+	%section
+		.grid-container
+			.grid-x
+				.cell.small-12
+					.ad-well
+						= render "layouts/ads/carbon/bottom_leader_728_90"
+	%section.section.m-top-20
+		%h2.h2.text-center Similar Listings
+		.grid-x.results
+			- recommended_listings(count=6, listing=@listing, site=current_site).each do |listing|
+				.cell.result.medium-6.list-result{class:listing.is_a?(Business) ? 'business' : 'listing'}
+					.card.cell.small-12
+						.grid-x
+							%a.cell.small-12.medium-2.media{:href=>listing_path(listing), title: listing.title }
+								- if listing.is_a?(Listing) && listing.photos && listing.photos.at(0)
+									%img{ src: listing.photos.at(0).url }
+								.align-center-center
+									%span.ss-icon.ss-tag
+									%span.ss-icon.ss-buildings
+									%br
+									%span.category
+										#{ listing.is_a?(Listing) && listing.category ? listing.category.name : 'For Sale' }
+							.cell.description{class:listing.is_a?(Business) ? 'small-8 medium-auto' : 'small-10 medium-8'}
+								%h4
+									%a{:href=>listing_path(listing), title: listing.title }
+										= listing.title || listing.name
+									- if false
+										%span.ss-icon.text-blue(ng-if="listing.type=='business'") bookmark
+								.address
+									%i.flaticon-signs
+									= listing.safe_address
+									- if location && location.latitude && listing.distance_from([location.latitude,location.longitude])
+										%small.text-muted
+											\- #{listing.distance_from([location.latitude,location.longitude]).ceil} mi
+								- if !listing.is_a? Business
+									.price
+										%span.text-blue
+											= listing.price
+										= listing.price_unit_formatted
+								- if listing.is_a? Business
+									.tags
+										= succeed ',' do
+											%a.text-blue<
+												Hay
+										= succeed ',' do
+											%a.text-blue<
+												Alfalfa
+										%a.text-blue<
+											Cattle
+									.stats
+										%small 0 Current Listings, 2 Past Listings
+								- if !listing.is_a? Business
+									%h4.text-right
+										%a{:href=>listing_path(listing), title: listing.title }
+											= listing.contact_name.titleize
+							- if listing.is_a? Business
+								.cell.small-shrink.show-for-medium.business-details
+									.grid-x
+										- if false
+											.cell.small-12
+												.listing-counter
+													.count 2
+													%strong Listings
+										.small-4
+											%span.ss-icon.text-blue earth
+										.small-4
+											%span.ss-icon.text-muted mail
+										.small-4
+											%span.ss-icon.text-blue phone
+
+	= render 'layouts/footer_hero'
+	= render 'layouts/footer'

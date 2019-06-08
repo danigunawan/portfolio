@@ -1,0 +1,99 @@
+- @listing ||= Listing.new
+= form_for @listing, url: @listing.id ? account_listing_path(@listing) : account_listings_path, method: @listing.id ? :patch : :post, html: { class: 'multipartForm', :'ng-controller' => "market.account.listings.ListingFormController", name: "listingForm", id: 'listingForm' } do
+	%section.section.submit-section
+		.grid-container.step-1
+			.grid-x.grid-padding-x{ :'ng-init' => "listing.photos = #{ @listing.listing_photos.map(&:photo).map { |i| { id: i.id, url: i.url } }.to_json }" }
+				.cell.photo.z.ng-cloak.handle(ng-repeat="photo in listing.photos" ng-class="{ uploading: (!photo.file && !photo.url) }")
+					%input(type="hidden" name="listing[photo_ids][]" value="{{ photo.id }}")
+					%md-progress-circular(md-mode="determinate" value="{{photo.progressPercentage}}" ng-if="photo.file")
+					.photo-thumbnail
+						%img(ngf-thumbnail="photo.file || photo.url || '/thumb.jpg'")
+					.photo-controls
+						%i.ss-icon.ss-move.handle
+						%i.ss-icon.ss-trash.z(ng-click="deletePhoto(photo)")
+				.cell.small-12.photo-uploader-dropzone(ngf-drop="uploadFiles($files)" ngf-select="uploadFiles($files)" ngf-resize-if="$width > 2000 || $height > 1500" ngf-resize="{width: 1500, height: 1500, quality: .9, type: 'image/jpeg', restoreExif: true}" multiple="multiple")
+					.button.expanded.primary.large(for="photosUpload")
+						%span.ss-icon camera
+						%strong
+							Take A Photo
+				.large-10.large-offset-1.cell.m-top-20
+					%input.radius(type="text" placeholder="Price")
+					%textarea.radius(ng-model="$parent.listing.description" name="listing[description]" placeholder="Short description of what you're selling (Recommended)" required rows="4" ng-minlength="0" ng-maxlength="2000"){ :'ng-init' => "$parent.listing.description = '#{ @listing.description ? escape_javascript(@listing.description) : nil }'" }
+					%button.button.expanded.error.large.m-top-50 Login With Facebook & Post
+		- if false && current_user
+			.grid-container.step-3.ng-cloak
+				.grid-x.grid-padding-x
+					.large-10.large-offset-1.cell
+						.submit-action.text-center
+							%md-progress-linear.left(md-mode="indeterminate" ng-show="submittingForm || photosUploading != 0")
+							%button.button.medium(type="submit" ng-click="submit($event)" ng-disabled="submittingForm || photosUploading != 0")
+								Submit listing
+								%span(ng-show="listing.boost_level.price && listing.boost_interval.term") &amp; Pay
+								%i.flaticon-long-arrow-right
+							.next-stepinfo.hide
+								%a{"data-toggle" => "pay", :href => "#"} Skip this step &amp; submit listing
+
+		- if !current_user
+			.grid-container.step-3.ng-cloak.m-top-50
+				.grid-x.grid-padding-x
+					.large-10.large-offset-1.cell
+						%h5.text-blue
+							%strong STEP 3
+						%h2.h2.mb0
+							Finally, let's get you set up with an
+							%span.text-green2 account
+						.lead.text-gray You can also sign in to an existing account or use Facebook to signup.
+						.field.cell.small-12.grid-x.m-top-20(ng-init="profile.updatePassword = false")
+							%h3.h3.m0.small-12.medium-auto.show-for-medium
+								%i.flaticon-avatar
+								Do you already have an account on #{current_site.name}?
+							.small-12.medium-shrink.m-top-20.h3
+								.switch.radius.float-right.m5
+									%input#isLogin.switch-input(type="checkbox" name="user[isLogin]" ng-model="user.isLogin")
+									%label.switch-paddle(for="isLogin")
+										%span.show-for-sr Would you like to receive notifications when new listings are added for your saved search queries?
+										%span.switch-active(aria-hidden="true") Yes
+										%span.switch-inactive(aria-hidden="true") No
+								%strong.float-left.m5.hide-for-medium Already have an account?
+						.m-top-20
+						.grid-x.grid-margin-x.ng-cloak(ng-hide="user.isLogin")
+							.medium-6.cell
+								.card.card-round(ng-class="{invalid: (listingForm[\"user[first_name]\"].$touched || validate) && listingForm[\"user[first_name]\"].$invalid }")
+									%label.aslabel.mb0
+										Your first name
+										%input.input-nob(name="user[first_name]" placeholder="First Name" type="text" ng-model="user.first_name" ng-required="!user.isLogin")
+							.medium-6.cell
+								.card.card-round(ng-class="{invalid: (listingForm[\"user[last_name]\"].$touched || validate) && listingForm[\"user[last_name]\"].$invalid }")
+									%label.aslabel.mb0
+										Your last name
+										%input.input-nob(name="user[last_name]" placeholder="Last Name" type="text" ng-model="user.last_name" ng-required="!user.isLogin")
+						.card.card-round(ng-class="{invalid: (listingForm[\"user[email]\"].$touched || validate) && listingForm[\"user[email]\"].$invalid }")
+							%label.aslabel.mb0
+								Enter your email
+								%input.input-nob(name="user[email]" placeholder="Your Email" type="email" ng-model="user.email" ng-blur="user.validateEmail()" required)
+						.card.card-round(ng-class="{invalid: (listingForm[\"user[password]\"].$touched || validate) && listingForm[\"user[password]\"].$invalid }")
+							%label.aslabel.mb0
+								Enter your password
+								%a.float-right.show-for-medium.ng-cloak(ng-show="user.isLogin" target="_blank"){href:new_user_password_path}
+									%small Forgot your password?
+								%input.input-nob(name="user[password]" placeholder="Your Password" type="password" ng-model="user.password" autocomplete="off" required)
+						.card.card-round.ng-cloak(ng-if="!user.isLogin" ng-class="{invalid: (listingForm[\"user[password_confirmation]\"].$touched || validate) && listingForm[\"user[password_confirmation]\"].$invalid }")
+							%label.aslabel.mb0
+								Confirm your password
+								%input.input-nob(name="user[password_confirmation]" placeholder="Confirm Your Password" ng-minlength="8" compare-to="user.password" type="password" ng-model="user.password_confirmation" ng-required="!user.isLogin" autocomplete="off")
+						.medium-12.cell(ng-show="errors")
+							.callout.radius.warning(ng-class="error.key" ng-bind="error.message" ng-repeat="error in errors track by error.key")
+						.grid-x.grid-padding-x
+							.cell.small-12.medium-auto.m-top-20
+								%button.float-left.button.medium.success.expanded(ng-clicks="nextStep($event, 3)" ng-click="user.authenticate($event)" type="button" ng-class="processing ? 'ellipsis' : ''")
+									%i.flaticon-avatar
+									%strong
+										%span(ng-show="!user.isLogin") {{ !processing ? 'Sign Up & Submit' : 'Setting up your new account' }}
+										%span(ng-show="user.isLogin") {{ !processing ? 'Log In & Submit' : 'Signing into your account' }}
+							- if false
+								.cell.small-12.medium-shrink
+									.or.float-left.m-top-30 OR
+								.cell.small-12.medium-auto.m-top-20
+									%a.button.float-left.btn-facebook.medium.expanded{:href => "#"}
+										%i.flaticon-facebook-logo
+										%strong Connect Facebook & Submit

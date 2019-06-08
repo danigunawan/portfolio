@@ -1,0 +1,19 @@
+# Number shortener:
+# http://stackoverflow.com/questions/11585734/shorten-long-numbers-to-include-k-m-b-t
+# number_to_human 420 # => "420"
+# number_to_human 5680 # => "5.68K"
+# number_to_human 12680 # => "12.7K"
+# number_to_human 6802251 # => "6.8M"
+# number_to_human 894100158 # => "894M"
+en:
+  number:
+    human:
+      decimal_units:
+        format: "%n%u"
+        units:
+          unit: ""
+          thousand: K
+          million: M
+          billion: B
+          trillion: T
+          quadrillion: Q

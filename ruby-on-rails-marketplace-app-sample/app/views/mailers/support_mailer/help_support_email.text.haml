@@ -1,0 +1,11 @@
+= @support_ticket.message
+
+= "---------------------------------------------------------------------"
+
+Name: #{ @support_ticket.name }
+Page: #{ @support_ticket.page }
+Email: #{ @support_ticket.reply_to }
+
+- if @support_ticket.user
+	User: #{ @support_ticket.user.full_name }
+	Email: #{ @support_ticket.user.email }

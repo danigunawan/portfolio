@@ -1,0 +1,2 @@
+%select.input-nob.ng-cloak(name="category" ng-hide="!subcategories().length" ng-model="selectedCategory" ng-change="updateCategory()" placeholder="Select Category" ng-options="categoryOption as categoryOption.name for categoryOption in subcategories() track by categoryOption.id")
+	%option(value="") Select Category

@@ -1,0 +1,31 @@
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "Organization",
+    "name": "<%= current_site.name%>",
+    "url": "https://<%= current_site.host%>",
+    "logo": {
+      "@type": "ImageObject",
+      "width": "400",
+      "height": "140",
+      "url": "<%= asset_url('logo.png')%>"
+    },
+    "sameAs": [
+      <% if !current_site.env["LINKEDIN_URL"].blank? %>
+        "<%= current_site.env["LINKEDIN_URL"] %>",
+      <% end %>
+      <% if !current_site.env["FACEBOOK_URL"].blank? %>
+        "<%= current_site.env["FACEBOOK_URL"] %>",
+      <% end %>
+      <% if !current_site.env["TWITTER_URL"].blank? %>
+        "<%= current_site.env["TWITTER_URL"] %>",
+      <% end %>
+      ""
+    ],
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://<%= current_site.host%>/search?keywords={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+</script>

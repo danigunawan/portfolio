@@ -1,0 +1,90 @@
+-# = render partial: "listings/listing", collection: [resource], as: :listing, locals: { display_photos: true, display_thumbnails: false }
+- transparent = false if local_assigns[:transparent].nil?
+.top-bar-fixed{ class: transparent ? 'top-bar-transparent' : ''}
+	.title-bar.clearfix.ng-cloak{"data-responsive-toggle" => "responsive-menu"}
+		%a.title-bar-title.logo{:href => root_path}
+			%span.logo-text.logo-white
+				#{current_site.name}
+			%span.logo-text.logo-black
+				#{current_site.name}
+		%button.menu-icon{"data-toggle" => "responsive-menu", :type => "button"}
+	#responsive-menu.top-bar
+		.top-bar-left
+			%ul.menu.ng-cloak
+				%li.menu-logo
+					%a.logo.logo-white{:href => root_path}
+						#{current_site.name}
+					%a.logo.logo-black{:href => root_path}
+						#{current_site.name}
+				%li
+					%a{:href => search_path}
+						%strong For Sale
+						%i.flaticon-long-arrow-right
+				%li
+					%a{:href => about_path, class: (request.fullpath.include?(about_path) ? 'active' : nil)}
+						About
+				%li
+					%a{:href => about_path, class: (request.fullpath.include?(about_path) ? 'active' : nil)}
+						Free Directory
+				%li
+					%a{:href => sell_path, class: (request.fullpath.include?(sell_path) ? 'active' : nil)}
+						Sell Free
+				%li.hide
+					%a{:href => posts_path, class: (request.fullpath.include?(posts_path) ? 'active' : nil)}
+						News
+		.top-bar-right.ng-cloak
+			- if current_user
+				%ul.menu.dropdown.ng-cloak(data-dropdown-menu)
+					%li.logged
+						%a
+							%i.icon.account-icons.avatar.hide-for-medium
+							#{ current_user.first_name }
+						%ul.menu.vertical.is-dropdown-submenu.ng-cloak
+							%li
+								%a.link{href:edit_account_profile_path, :class => (request.fullpath.starts_with? edit_account_profile_path) ? "current" : nil }
+									%i.icon.account-icons.avatar
+									Profile
+							%li
+								%a.link{href:account_listings_path, :class => (request.fullpath.starts_with? account_listings_path) ? "current" : nil }
+									%i.icon.account-icons.apps
+									My Listings
+							%li
+								%a.link{href:account_favorites_path, :class => (request.fullpath.starts_with? account_favorites_path) ? "current" : nil }
+									%i.icon.account-icons.heart
+									Saved Listings
+							%li
+								%a.link{href:account_saved_searches_path, :class => (request.fullpath.starts_with? account_saved_searches_path) ? "current" : nil }
+									%i.icon.account-icons.floppy-disk
+									Saved Searches
+							- if false
+								%li
+									%a.link(ng-click="SessionService.openModal('subscription.html')"){:class => (request.fullpath.starts_with? edit_account_billing_path) ? "current" : nil }
+										%i.icon.account-icons.credit-card
+										Billing
+							%li.button-item.show-for-medium
+								%a.cell.magic-button.button.expand{:href => destroy_user_session_path}
+									Logout
+					%li.hide-for-medium
+						%a.link(ng-click="SessionService.openModal('help.html')")
+							Help
+							%i.flaticon-help-button.float-right
+					%li.hide-for-medium
+						%a.link{:href => destroy_user_session_path}
+							Logout
+							%i.flaticon-long-arrow-right.float-right
+					%li.menu-item
+						%a.magic-button.small{href:current_user.listings.present? ? new_account_listing_path : sell_path}
+							Post A Free Ad
+			- else
+				%ul.menu
+					%li
+						%a{:href => new_user_session_path}
+							%i.flaticon-avatar
+							Login
+					%li.menu-item
+						%a.magic-button{href:sell_path}
+							Post A Free Ad
+- if false && current_site.settings["headliner"]
+	.cell.headliner.text-center.marquee
+		%span
+			%a.text-gray #{current_site.settings["headliner"]}

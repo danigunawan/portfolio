@@ -1,0 +1,99 @@
+= render 'layouts/header'
+%header.header-sm.header-about
+	.grid-container
+		%h1 #{ current_site.name } Blog
+		.lead.text-muted Read articles You may be interested in!
+.section-blog
+	.grid-container
+		.grid-x.grid-padding-x
+			.medium-8.cell
+				.blog-filters
+					%button.btn-text.active{:type => "button"} By Date
+					%button.btn-text{:type => "button"} By Popularity
+					%button.btn-icon.active{:type => "button"}
+						%i.flaticon-down-arrow
+					%button.btn-icon{:type => "button"}
+						%i.flaticon-up-arrow
+				.blog-listings
+					- @posts.each do |post|
+						.card.card-blog
+							.card-section
+								%a{:href => post_path(post)}
+									%img{:src => asset_path("blog/blog-md-01.jpg")}/
+								.date 21, October 2017
+								%h4
+									%a{:href => "blog-post.html"} Selecting Hays For Horses
+								%p High quality forage normally makes up 40-100% of the horses diet, depending upon work load and physiological stage of development.
+								%a.readmore{:href => "blog-post.html"}
+									CONTINUE READING
+									%i.flaticon-long-arrow-right
+					.card.card-blog
+						.card-section
+							%a{:href => "blog-post.html"}
+								%img{:src => asset_path("blog/blog-md-01.jpg")}/
+							.date 21, October 2017
+							%h4
+								%a{:href => "blog-post.html"} Selecting Hays For Horses
+							%p High quality forage normally makes up 40-100% of the horses diet, depending upon work load and physiological stage of development.
+							%a.readmore{:href => "blog-post.html"}
+								CONTINUE READING
+								%i.flaticon-long-arrow-right
+					.card.card-blog
+						.card-section
+							%a{:href => "blog-post.html"}
+								%img{:src => asset_path("blog/blog-md-01.jpg")}/
+							.date 21, October 2017
+							%h4
+								%a{:href => "blog-post.html"} Selecting Hays For Horses
+							%p High quality forage normally makes up 40-100% of the horses diet, depending upon work load and physiological stage of development.
+							%a.readmore{:href => "blog-post.html"}
+								CONTINUE READING
+								%i.flaticon-long-arrow-right
+				/ /.blog-listings
+				.blog-pagination
+					%a{:href => "#"}
+						%i.flaticon-left-arrow
+						Older
+					%a{:href => "#"}
+						Newer
+						%i.flaticon-right-arrow
+			.medium-4.cell
+				.blog-siderbar
+					%form.form-blogsearch.m-top-20
+						%label
+							%input{:placeholder => "Search articles", :type => "text"}/
+						%button.btn-icon{:type => "submit"}
+							%i.flaticon-magnifying-glass
+					.ad-unit
+						= render "layouts/ads/ad_unit_300_250"
+					%h3 MOST POPULAR ARTICLES
+					%ul.list-articles
+						%li
+							.media-object
+								.media-object-section
+									%a{:href => "#"}
+										%img{:src => asset_path("blog/blog-xsm-01.jpg")}/
+								.media-object-section
+									%h4
+										%a{:href => "#"} Selecting Hays For Horses
+									%p High quality forage normally
+						%li
+							.media-object
+								.media-object-section
+									%a{:href => "#"}
+										%img{:src => asset_path("blog/blog-xsm-01.jpg")}/
+								.media-object-section
+									%h4
+										%a{:href => "#"} Selecting Hays For Horses
+									%p High quality forage normally
+						%li
+							.media-object
+								.media-object-section
+									%a{:href => "#"}
+										%img{:src => asset_path("blog/blog-xsm-01.jpg")}/
+								.media-object-section
+									%h4
+										%a{:href => "#"} Selecting Hays For Horses
+									%p High quality forage normally
+= render 'layouts/footer_hero'
+= render 'layouts/footer'

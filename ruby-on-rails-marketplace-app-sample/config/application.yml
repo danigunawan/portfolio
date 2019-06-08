@@ -1,0 +1,20 @@
+PROJECT_VERSION: "5.0.0"
+
+REDIS_URL: "xxxxx"
+MARKET_ADMIN_HOST: xxxxx
+
+development:
+  REDIS_URL: "redis://localhost:6379/1"
+  MARKET_ADMIN_HOST: localhost
+
+# GOOGLE
+# -------------------------------------------------------
+GOOGLE_MAPS_BROWSER_API_KEY: "xxxxx"
+
+IPSTACK_API_KEY: "xxxxx"
+
+# AWS
+# -------------------------------------------------------
+AWS_S3_BUCKET: "xxxxx"
+AWS_ACCESS_KEY_ID: "xxxxx"
+AWS_SECRET_ACCESS_KEY: "xxxxx/xxxxx"

@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  last_run: 2015-12-07 12:45:19
+  scraper_model: MyString
+  category_model_id: 
+  host: MyString
+  minimum_seconds_between_crawls: 1
+
+two:
+  last_run: 2015-12-07 12:45:19
+  scraper_model: MyString
+  category_model_id: 
+  host: MyString
+  minimum_seconds_between_crawls: 1

@@ -1,0 +1,28 @@
+- @post ||= Post.new
+%section.section-blog-post
+	= form_for @post, url: @post.id ? account_listing_path(@post) : account_listings_path, method: @post.id ? :patch : :post, html: { class: 'grid-container', :'ng-controller' => "market.account.PostFormController", :'ng-init' => "post = {}", name: "postForm", id: 'postForm' } do
+		.grid-x.grid-padding-x
+			.cell
+				%input.title-input.cell(type="text" ng-model="post.title" placeholder="Post Title")
+			.medium-8.cell
+				#post_editor
+					%p Hello world!
+					%p Lorem ipsum? Nah!!!
+			.medium-4.cell{ :'ng-init' => "post.photos = #{ @post.photo_assignments.map(&:photo).map { |i| { id: i.id, url: i.url } }.to_json }".html_safe }
+				.cell.small-12.button.large.photo-uploader-dropzone(ngf-drop="uploadFiles($files)" ngf-select="uploadFiles($files)" ngf-resize-if="$width > 2000 || $height > 1500" ngf-resize="{width: 1500, height: 1500, quality: .9, type: 'image/jpeg', restoreExif: true}" multiple="multiple")
+					%strong Upload Photos
+				%ul.sortable.photo-upload-manager
+					%li.ui-state-default.photo.z.ng-cloak.handle.cell.card(ng-repeat="photo in post.photos" ng-class="{ uploading: (!photo.file && !photo.url) }")
+						%input(type="hidden" name="post[photo_ids][]" value="{{ photo.id }}")
+						.grid-x
+							.photo-thumbnail.cell.small-4
+								%img.cell(ngf-thumbnail="photo.file || photo.url || '/thumb.jpg'")
+							.photo-controls.cell.small-8
+								{{photo.progressPercentage}}%
+								%i.ss-icon.ss-move.handle
+								%i.ss-icon.ss-trash.z(ng-click="deletePhoto(photo)")
+			.cell
+				%button.expanded.primary.button.m-top-50(type="submit") Submit Post
+
+%script(src="https://cdn.quilljs.com/1.3.6/quill.js")
+%link(href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet")

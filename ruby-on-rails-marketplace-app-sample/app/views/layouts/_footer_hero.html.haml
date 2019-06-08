@@ -1,0 +1,17 @@
+%section.m-top-20
+	.grid-container
+		.ad-well
+			= render "layouts/ads/carbon/bottom_leader_728_90"
+
+%section.cta.m-top-20
+	.grid-container
+		.grid-x.grid-padding-x
+			.large-9.medium-8.cell
+				.left-middle
+					%h2 Ready to list on #{ current_site.name } for free?
+					%p Listing only takes a few minutes and get's you in front of a community of thousands.
+			.large-3.medium-4.cell
+				.left-middle
+					%a.button.btn-white.large.has-shadow.expanded{:href => sell_path}
+						%i.flaticon-add-circular
+						Add Your Listing Free

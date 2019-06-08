@@ -1,0 +1,15 @@
+.bundle/
+log/**
+pkg/
+tmp/**
+*.sqlite3
+db/development.sqlite3
+vendor/assets/themes/pages/docs/samples/**/plugins/**
+.byebug_history
+solr/pids/development/sunspot-solr-development.pid
+solr/development/data
+solr/configsets/sunspot/data/index/write.lock
+solr/configsets/sunspot/data/index/segments_1
+solr/development/data/index/_0_Lucene50_0.doc
+latest.dump
+.DS_Store

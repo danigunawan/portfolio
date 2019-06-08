@@ -1,0 +1,10 @@
+!!! XML
+
+%urlset(xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd")
+  - current_site.sitemap.each do |item|
+    %url
+      %loc
+        = "#{ current_site.link }#{ item.path }"
+      - if item.lastmod
+        %lastmod
+          = item.lastmod.strftime '%Y-%m-%dT%H:%M:%S%z'

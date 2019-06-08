@@ -1,0 +1,101 @@
+= content_for :account_header_content do
+	%strong Manage your billing and subscriptions.
+	%span
+		Need some help? Let us know!
+
+= content_for :account_content do
+	= form_tag request.fullpath, { class: 'form profile grid-x grid-margin-x align-top', name: "billing", novalidate: true } do
+		.adsf(ng-controller="market.account.BillingController")
+			.aadsf-item.is-active.form-section.valid
+				%a.adsf-title.valid
+					%i.ss-icoin.ss-check
+					Subscription & Plan
+				= form_tag request.path, method: :post, class: 'accordion-content body form-horizontal' do
+					.control-group.grid-x.grid-margin-x
+						- Plan.where(active: true).order(:amount).each do |plan|
+							.cell.radius.plan.radius.m-top-10.text-center.small-6.medium-3.padding-20{ class: plan == current_user.plan ? 'z blue-hero white' : '' }
+								%h3
+									%strong
+										= plan.name
+									%br
+									%small{ class: plan == current_user.plan ? 'white' : '' }
+										= plan.amount == 0 ? 'Free' : number_to_currency(plan.amount/100.0) + ' per mo'
+								%h4
+									%strong
+										= plan.metadata["searching"] || '∞'
+										Searching
+								%h4
+									%strong
+										= plan.metadata["listings"] || '∞'
+										= "Listing".pluralize(plan.metadata["searching"].to_i || 2)
+								%br
+								%button.button.m-0.white.cell(type='submit' name="user[plan_id]"){ value: plan.id, class: plan == current_user.plan ? 'secondary' : 'primary' }
+									= plan == current_user.plan ? 'Active' : 'Choose Plan'
+						.cell.radius.plan.radius.m-top-10.text-center.small-6.medium-3.padding-20
+							%h3
+								%strong Enterprise
+								%br
+								%small Contact
+							%h4
+								%strong ∞ Searching
+							%h4
+								%strong XX listings
+							%br
+							%a.button.m-0.primary.cell(ng-click="SessionService.openModal('help.html')") Contact
+						.cell.small-12.radius.plan.radius.text-center.padding-20
+							%i.ss-icon navigatedown
+						.cell.radius.plan.radius.small-12.grid-x.z.padding-20.grid-padding-x.blue-hero.white
+							.cell.small-12.medium-auto
+								%h3.m-top-10
+									%strong
+										= number_to_currency(current_user.plan.amount/100.0)
+										per month
+									+
+									%strong
+										= pluralize current_user.listings.count, 'Featured Listing'
+										x
+										$3 per month
+									%br
+									%small.white Manage Listings
+							.cell.small-12.medium-auto.grid-x
+								.cell.auto.text-align-right.grid-y
+									.cell.auto
+									%h3.cell.shrink.m-0
+										%strong Monthly Total
+										%i.ss-icon.white navigate right
+									.cell.auto
+								.cell.shrink.grid-y
+									.cell.auto
+									%button.cell.shrink.button.secondary.m-0.left
+										%strong
+											= "#{ number_to_currency(current_user.listings.count*3.00 + current_user.plan.amount/100.0) } / Month"
+									.cell.auto
+			.aaccordion-item.is-active.form-section.valid
+				%a.accordion-title.valid
+					%i.ss-icoin.ss-check
+					Payment Methods
+				.accordion-content.body-form-horizontal
+					.control-group.grid-x.grid-margin-x
+						- current_user.customer.sources.each do |card|
+							.cell.small-12.medium-4.plan.radius.m-top-10.z.padding-20.white.grid-x{ class: current_user.customer.default_source == card.id ? "blue-hero" : "black-hero" }
+								%h3.cell.auto
+									%strong
+										= card.brand
+									%small.white
+										= "(#{ card.last4 })"
+								.cell.shrink
+									%small.white.right
+										= "#{ card.exp_month }/#{ card.exp_year }"
+								.cell
+									%small.white
+										= current_user.customer.default_source == card.id ? "Primary" : "Backup"
+									= link_to '<strong>Delete Card</strong>'.html_safe,  account_billing_path.add_param_to_uri('id', card.id[-6,6]),  method: :delete, data: { confirm: 'Are you sure you want to your payment card?' }, class: 'white right'
+						.cell.small-12.medium-4.plan.radius.m-top-10.z.padding-20.gray-hero.white
+							%h3.cell.auto(ng-click="SessionService.openModal('add_card.html')")
+								%strong.ss-icon.white plus
+								%strong Add New Card
+							.cell.shrink
+							%a.cell(ng-click="SessionService.openModal('help.html')")
+								%small.white Billing Support
+
+= render :file => 'account/account'

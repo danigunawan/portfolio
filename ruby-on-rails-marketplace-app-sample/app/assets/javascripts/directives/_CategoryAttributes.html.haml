@@ -1,0 +1,19 @@
+-# .medium-5.cell.card.card-round
+-# 	%label.aslabel.mb0
+-# 		Availability
+-# 		%input.input-nob
+.grid-x.grid-padding-x
+	.cell.medium-12(ng-repeat="category_attribute in SessionService.categoryById(category.id).category_attributes" ng-class="{ valid: !category_attribute.required || category_attribute.boolean || listing.category_attributes[category_attribute.id] }")
+		.acard.acard-round(ng-class="{invalid: (form[\"{{ name }}[{{ category_attribute.id }}]\"].$touched || validate) && (form[\"{{ name }}[{{ category_attribute.id }}]\"].$invalid || form[\"{{ name }}[{{ category_attribute.id }}]\"].$empty)}")
+			%label.aslabel.mb0.m-top-20
+				%span(ng-bind="category_attribute.name" ng-if="category_attribute.restricted && category_attribute.boolean")
+				%select.input-nobb.radius(ng-if="category_attribute.restricted && !category_attribute.boolean" ng-required="category_attribute.required" placeholder="{{ category_attribute.config.placeholder || category_attribute.name }}" ng-model="listing.category_attributes[category_attribute.id]" name="{{ name }}[{{ category_attribute.id }}]" ng-options="categoryOption.id as categoryOption.value for categoryOption in category_attribute.category_attribute_values")
+					%option(value="") {{ category_attribute.config.placeholder || 'Select ' + category_attribute.name + (category_attribute.required ? ' (Required)' : ' (Optional)') }}
+				%input.input-nobb.radius(ng-if="!category_attribute.restricted" placeholder="{{ category_attribute.name + (category_attribute.required ? ' (Required)' : ' (Optional)') }}" ng-required="category_attribute.required" type="text" ng-model="listing.category_attributes[category_attribute.id]" name="{{ name }}[{{ category_attribute.id }}]")
+				.switch.float-right(ng-if="category_attribute.restricted && category_attribute.boolean")
+					%input#yes-no.switch-input(type="checkbox" ng-model="listing.category_attributes[category_attribute.id]" name="{{ name }}[{{ category_attribute.id }}]" ng-true-value="1" ng-false-value="0" value="1")
+					%label.switch-paddle(for="yes-no" )
+						%span.switch-active(aria-hidden="true") Yes
+						%span.switch-inactive(aria-hidden="true") No
+
+				.cell.small-12.helper.hide(ng-show="category_attribute.config.helper" ng-bind="category_attribute.config.helper")

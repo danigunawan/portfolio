@@ -1,0 +1,49 @@
+= render 'layouts/header'
+%header.header-sm.header-about.section-white
+	.grid-container
+		%h1 About #{current_site.name}
+		.lead.text-muted Your free local marketplace.
+%section.section-imgtext
+	.about-img
+	.grid-container
+		.grid-x.grid-padding-x
+			.medium-5.medium-offset-7.cell
+				%h3.h3 We're #{ current_site.name }, a classifieds community designed to connect local buyers with professional producers. It is our primary objective to expedite the selling process so you can continue doing what you do best.
+				%p The #{ current_site.name } community may not be the oldest around, but we continually seek to outperform with a classifieds experience unlike any other. Our platform caters to businesses and professionals that don't have time to waste selling in a cluttered general marketplace.
+				%br/
+				%a.text-green.text-semibold{:href => sell_path}
+					Sell On #{ current_site.name }
+					%i.flaticon-long-arrow-right
+%section.section.about-features.section-white
+	.grid-container
+		.grid-x.grid-padding-x
+			.large-4.medium-6.large-offset-1.cell
+				.card.card-round.card-saved
+					.card-img
+						%img{:src => asset_path("save-search.gif")}/
+			.large-5.medium-6.large-offset-1.cell.posr
+				.left-middle
+					%h3.h3.text-medium Save Your Searches!
+					%p At #{current_site.name}, you can save your favorite searches in just one click. You'll find your saved searches on your profile page or at a dropdown near the search button.
+		.arrow
+			%img{:src => asset_path("arrow-left.png")}/
+		.grid-x.grid-padding-x
+			.large-4.medium-6.large-offset-1.cell.medium-order-2
+				.card.card-round.card-saved
+					.card-img
+						%img{:src => asset_path("save-listing.gif")}/
+			.large-5.medium-6.large-offset-1.cell.medium-order-1.posr
+				.left-middle
+					%h3.h3.text-medium Save Listings You Like!
+					%p Press a ‘heart’ icon located near the listing’s price display and save it for later incase you need it. You can find all saved listings on your profile page.
+		.arrow
+			%img{:src => asset_path("arrow-left.png")}/
+		.grid-x.grid-padding-x
+			.large-4.medium-6.large-offset-1.cell
+				.device-img
+					%img{:src => asset_path("img-05.png")}/
+			.large-5.medium-6.large-offset-1.cell
+				%h3.h3.text-medium Adapted For Every Device You Have!
+				%p You can use #{current_site.name} on any web enabled device you have. It will look great on a smartphone, tablet, laptop or desktop computer.
+= render 'layouts/footer_hero'
+= render 'layouts/footer'

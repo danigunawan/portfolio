@@ -1,0 +1,147 @@
+source 'https://rubygems.org'
+
+# Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+gem 'rails'
+
+# Postgres db adapter gem.
+gem 'pg'
+# Mongoid adapter for stats.
+gem 'mongoid', '~> 5.2.0'
+
+# Stripe API Library
+gem 'stripe', :git => 'https://github.com/stripe/stripe-ruby'
+
+gem 'rails_admin', '~> 1.2'
+
+group :development do
+  # Live reload plugins.
+  gem 'guard-livereload', '~> 2.4', require: false
+  gem "rack-livereload"
+
+  # Debugging tool.
+	gem 'byebug'
+
+  gem 'capistrano', require: false
+  gem 'capistrano-rvm', require: false
+  gem 'capistrano-rails', require: false
+  gem 'capistrano-rails-db', require: false
+  gem 'capistrano-bundler', require: false
+  gem 'capistrano-passenger', require: false
+	gem 'capistrano-rails-console', require: false
+  gem 'capistrano-faster-assets', '~> 1.0', require: false
+end
+
+group :production do
+	gem 'rails_12factor'
+end
+
+gem 'puma'
+
+gem 'haml-rails'
+gem "babel-schmooze-sprockets" # ADDS BABEL 6 SUPPORT
+gem 'font_assets'
+gem 'foundation-rails', '~> 6.4'
+gem 'sass-rails'
+gem 'uglifier'
+gem 'coffee-rails'
+gem 'jquery-rails'
+gem 'turbolinks'
+gem "angular-turbolinks"
+gem 'jquery-turbolinks'
+gem 'jbuilder'
+gem 'figaro'
+gem 'responders', '~> 2.0'
+gem 'high_voltage', '~> 3.0.0'
+
+# View Tracking
+gem 'impressionist', '~> 1.5'
+
+# Comment Engine
+gem 'acts_as_commentable_with_threading'
+
+# Soft Delete helper gem
+gem "paranoia", "~> 2.2"
+
+# Ratings Engine
+gem 'acts_as_votable', '~> 0.10.0'
+
+# Auth gems
+gem 'devise'
+
+# Email gems
+gem 'mailgun_rails'
+gem 'mailboxer' # User to user messaging.
+
+# # File upload gems
+gem 'mini_magick'
+gem 'aws-sdk', '~> 2'
+gem 'jquery-fileupload-rails'
+
+# # External API gems
+gem 'rest-client'
+gem 'json', '1.8.3'
+
+# # Google APIs
+gem 'google-adwords-api'
+
+# # Facebook API
+gem 'koala', '~> 1.8.0rc1'
+
+# Social Sharing Buttons
+gem 'shareable'
+
+gem 'geocoder', '~> 1.4.9'
+
+# # Routes Friendly ID
+gem 'friendly_id', '~> 5.0.0'
+
+# NOTE: MUST BE BEFORE DELAYED JOB GEM
+gem 'protected_attributes'
+
+# # CRON Job gem and Job Queue gems
+gem 'whenever'
+gem 'delayed_job_active_record'
+gem 'delayed_job_web', '1.2.5'
+
+# # Pagination
+gem 'will_paginate'
+
+# Rails Angular Integration
+gem 'bower-rails'
+gem 'angular-rails-templates'
+gem 'angular_rails_csrf'
+gem 'monetize'
+gem 'money-rails'
+
+gem 'redis-rails'
+
+# Amp pages support for mobile cache support.
+gem 'rails_amp'
+
+# ActiveRecord Versioning
+gem 'paper_trail', '~> 3.0.6'
+
+# Permissions
+gem 'cancancan'
+gem 'indefinite_article'
+
+# Scraping
+gem 'wombat'
+gem 'curb'
+
+# Search
+gem 'rsolr', '<2' # !! Locked to fix the xml json bug in version 2.0.2
+gem 'sunspot_rails'
+gem 'sunspot_solr'
+gem 'progress_bar'
+
+gem 'recaptcha'
+
+# Production Debugger Notifications
+gem 'exception_notification'
+gem 'slack-notifier'
+
+# Wysiwyg editor
+gem 'quilljs-rails'
+
+ruby "2.3.3"

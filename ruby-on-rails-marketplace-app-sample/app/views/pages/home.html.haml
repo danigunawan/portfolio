@@ -1,0 +1,206 @@
+= content_for :title do
+	#{ current_site.name } - #{ current_site.env["TAG_LINE"] ? current_site.env["TAG_LINE"] : 'Free local classifieds!'}
+= render 'layouts/header', transparent: true
+%header.homepage-header
+	.grid-container
+		.center-middle
+			%h1
+				%a{href: sell_path} #{ current_site.env["TAG_LINE"] ? current_site.env["TAG_LINE"] : 'Free local classifieds!'}
+			.search-homepage
+				.grid-x.search-tabs.align-stretch
+					.medium-5.cell.search-button-container
+						%a.button.search-button.expanded Search For Sale
+					.medium-7.cell.sell-button-container
+						%a.button.info.sell-button.expanded{href:sell_path}
+							Within 5 minutes! List #{ current_site.categories.limit(4).map(&:name).join(', ')} & More
+							%i.flaticon-long-arrow-right
+				= form_tag search_path, { method: 'GET', name: "Search", novalidate: true, enforce_utf8: false } do
+					.grid-x.grid-padding-x.search-inner
+						.large-8.medium-9.cell
+							.grid-x.grid-padding-x
+								.xlarge-12.large-12.medium-12.cell
+									.input-wrap
+										%label
+											%span Search By Keyword
+											%input(ng-if="keywords" name="keywords" type="hidden" value="{{ keywords }}")
+											%input(autofocus="true" ng-model="keywords"){:placeholder => "Ex: Hay For Sale In Kansas", :type => "text"}/
+								- if false
+									.xlarge-3.large-4.medium-5.cell.has-separator
+										.input-wrap
+											%label
+												%span Choose Category
+												%input(type="hidden" ng-if="searchQuery.category" value="{{ searchQuery.category.id }}" name="category_id")
+												%select.input-nob.ng-cloak(ng-model="searchQuery.category" placeholder="Select Category" ng-options="categoryOption as categoryOption.name for categoryOption in SessionService.TopLevelCategories track by categoryOption.id")
+													%option(value="") All Categories
+									.xlarge-4.large-4.medium-12.cell.has-separator.hide
+										.input-wrap
+											%label
+												%span
+													Distance from you
+													%span#sliderValue.text-blue ({{ searchQuery.distance }} miles)
+											%slider(ng-model="searchQuery.distance" min="1" step="1" max="500" value="500" ng-init="searchQuery.distance = 500")
+											%input(type="hidden" name="distance" value="{{ searchQuery.distance }}")
+						.large-4.medium-3.small-12.cell
+							%button.success.button.expanded{:type => "submit"} Search For Sale
+	%a.scroll-down{:href => search_path}
+		Explore recent listings
+		%i.flaticon-long-arrow-right
+/ /.header
+- if true
+	%section#recent-listings.section.m-top-20
+		.grid-container
+			.grid-x.grid-padding-x
+				.medium-6.cell.small-text-center
+					%h2.h2 Recommended Listings
+				.medium-6.cell.text-right.small-text-center
+					%a.button.btn-border-green.text-black.tiny.m-top-10{:href => search_path} SEE ALL LISTINGS
+			.grid-x.grid-padding-x.results
+				- current_site.listings.limit(6).each_with_index do |listing, index|
+					.cell.grid-x{class: index < 2 ? 'medium-6' : 'medium-6'}
+						.cell.result.list-result{class:listing.is_a?(Business) ? 'business' : 'listing'}
+							.card.cell.small-12
+								.grid-x
+									%a.cell.small-12.medium-2.media{:href=>listing_path(listing), title: listing.title }
+										- if listing.is_a?(Listing) && listing.photos && listing.photos.at(0)
+											%img{ src: listing.photos.at(0).url }
+										.align-center-center
+											%span.ss-icon.ss-tag
+											%span.ss-icon.ss-buildings
+											%br
+											%span.category
+												#{ listing.is_a?(Listing) && listing.category ? listing.category.name : 'For Sale' }
+									.cell.description{class:listing.is_a?(Business) ? 'small-8 medium-auto' : 'small-10 medium-8'}
+										%h4
+											%a{:href=>listing_path(listing), title: listing.title }
+												= listing.title || listing.name
+											- if false
+												%span.ss-icon.text-blue(ng-if="listing.type=='business'") bookmark
+										.address
+											%i.flaticon-signs
+											= listing.safe_address
+											- if location && location.latitude && listing.distance_from([location.latitude,location.longitude])
+												%small.text-muted
+													\- #{listing.distance_from([location.latitude,location.longitude]).ceil} mi
+										- if !listing.is_a? Business
+											.price
+												%span.text-blue
+													= listing.price
+												= listing.price_unit_formatted
+										- if listing.is_a? Business
+											.tags
+												= succeed ',' do
+													%a.text-blue<
+														Hay
+												= succeed ',' do
+													%a.text-blue<
+														Alfalfa
+												%a.text-blue<
+													Cattle
+											.stats
+												%small 0 Current Listings, 2 Past Listings
+										- if !listing.is_a? Business
+											%h4.text-right
+												%a{:href=>listing_path(listing), title: listing.title }
+													= listing.contact_name.titleize
+									- if listing.is_a? Business
+										.cell.small-shrink.show-for-medium.business-details
+											.grid-x
+												- if false
+													.cell.small-12
+														.listing-counter
+															.count 2
+															%strong Listings
+												.small-4
+													%span.ss-icon.text-blue earth
+												.small-4
+													%span.ss-icon.text-muted mail
+												.small-4
+													%span.ss-icon.text-blue phone
+	- if false
+		%section.section.m-top-50
+			.grid-container
+				%h2
+					%strong Cattle Classifieds
+				%p Are you a cattle producer? List your cattle for free on RanchOffer.com. We're excited to help you sell your livestock for free!
+				.grid-x.grid-padding-x.link-table
+					%a.cell.small-12.medium-6.large-4(href="/cattle-for-sale/angus") Angus Cattle For Sale
+					%a.cell.small-12.medium-6.large-4(href="/cattle-for-sale/charolais") Charolais Cattle For Sale
+					%a.cell.small-12.medium-6.large-4(href="/cattle-for-sale/hereford") Hereford Cattle For Sale
+					%a.cell.small-12.medium-6.large-4(href="/cattle-for-sale/simmental") Simmental Cattle For Sale
+					%a.cell.small-12.medium-6.large-4(href="/cattle-for-sale/red-angus") Red Angus Cattle For Sale
+					%a.cell.small-12.medium-6.large-4(href="/cattle-for-sale/brangus") Brangus Cattle For Sale
+	- if current_site.blogging_enabled
+		%section.section
+			.grid-container
+				%h2.h2.text-center Latest From The Blog
+				.grid-x.grid-padding-x
+					.large-3.medium-6.cell
+						.card.card-blog.card-sm
+							.card-section
+								%img{:src => asset_path("blog/blog-sm-01.jpg")}/
+								.date 21, October 2017
+								%h4
+									%a{:href => "#"} Selecting Hays For Horses
+								%p High quality forage normally makes up 40-100% of the horses diet, depending upon
+								%a.readmore{:href => "#"}
+									CONTINUE READING
+									%i.flaticon-long-arrow-right
+					.large-3.medium-6.cell
+						.card.card-blog.card-sm
+							.card-section
+								%img{:src => asset_path("blog/blog-sm-02.jpg")}/
+								.date 21, October 2017
+								%h4
+									%a{:href => "#"} JCB Unveils New Compact...
+								%p JCB today launched its 210T and 215T compact track loaders, offering the power and
+								%a.readmore{:href => "#"}
+									CONTINUE READING
+									%i.flaticon-long-arrow-right
+					.large-3.medium-6.cell
+						.card.card-blog.card-sm
+							.card-section
+								%img{:src => asset_path("blog/blog-sm-03.jpg")}/
+								.date 21, October 2017
+								%h4
+									%a{:href => "#"} Hay. What You Need to Know?
+								%p Hay, in agriculture, dried grasses and other foliage used as animal feed. Usually the material is cut
+								%a.readmore{:href => "#"}
+									CONTINUE READING
+									%i.flaticon-long-arrow-right
+					.large-3.medium-6.cell
+						.card.card-blog.card-sm
+							.card-section
+								%img{:src => asset_path("blog/blog-sm-04.jpg")}/
+								.date 21, October 2017
+								%h4
+									%a{:href => "#"} The Pros and Cons of Straw...
+								%p Following are some pros and cons of building a straw bale house. Like any building
+								%a.readmore{:href => "#"}
+									CONTINUE READING
+									%i.flaticon-long-arrow-right
+				.btn-more-wrap
+					%a.button.btn-border-green.text-black.small{:href => "blog.html"}
+						EXPLORE MORE ARTICLES
+						%i.flaticon-long-arrow-right
+
+	-#
+	-# = form_tag '/for-sale', method: :get, id: 'searchQueryForm', class: 'grid-x z padding-5 round' do
+	-# 	.cell.auto.m-0.padding-5
+	-# 		%input.cell.m-0.no-style.round(type="text" placeholder="Search for something" name="q")
+	-# 	.cell.shrink.m-0.padding-5
+	-# 		%button.button.secondary.round.m-0 Search
+	-#
+	-# - recommended_listings(count=5,listing=@listing,site=current_site).each_with_index do |resource, index|
+	-# 	.cell.small-12.similar-listings.m-top-20{ class: index <= 1 ? (index == 0 ? 'large-6 medium-12' : 'large-6 medium-6') : 'medium-6 large-4'}
+	-# 		= render partial: "listings/listing", collection: [resource], as: :listing, locals: { display_photos: true, display_thumbnails: false }
+	-# .cell.small-12.text-center.m-top-50
+	-# 	= render "layouts/ads/ad_unit_728_90"
+	-#
+	-#
+	-# - Post.all.limit(4).each do |resource|
+	-# 	.cell.small-12.medium-6.large-3.m-top-20
+	-# 		= render partial: "posts/post", collection: [resource], as: :post
+	-# .cell.small-12.text-center.m-top-50
+	-# 	= render "layouts/ads/ad_unit_728_90"
+	= render 'layouts/footer_hero'
+	= render 'layouts/footer'

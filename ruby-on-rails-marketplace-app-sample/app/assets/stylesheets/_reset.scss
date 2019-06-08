@@ -1,0 +1,35 @@
+/* Default to no list style. */
+ul {
+	list-style:none;
+}
+
+/* Globally turnoff browser focus outlines. */
+*:focus {
+	outline:none;
+}
+
+* {
+	color: inherit;
+	font-size: inherit;
+	// letter-spacing: 0.4px;
+}
+
+.pointer {
+	cursor: pointer !important;
+}
+
+/*--------------------------------Angular Ng Cloak CSS--------------------------------*/
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+	display: none !important;
+}
+
+/*-----------------------------------Global Styles------------------------------------*/
+
+// * {
+	// opacity: .999999;
+// }
+
+img {
+	max-width: unset;
+}

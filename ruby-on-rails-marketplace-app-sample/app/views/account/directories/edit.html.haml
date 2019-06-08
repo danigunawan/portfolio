@@ -1,0 +1,27 @@
+= content_for :account_header_content do
+	Enable & update your professional directory listing details
+
+= content_for :account_content do
+	= form_tag account_profile_path, { method: 'PUT', class: 'form profile grid-x grid-margin-x align-top', name: "profileForm", novalidate: true } do
+
+		%h2.title.cell.small-12 Edit Your Directory Listing
+
+		.field.well.favorite-notifications.cell.small-12.grid-x
+			.small-12.medium-auto
+				%label Activate directory listing? It's free.
+				We'll list your business in search so people
+				%br
+				can contact you about your services or products.
+			.small-12.medium-shrink
+				.switch.large.radius.m-top-10
+					%input(type="hidden" name="user[enable_directory]" value="{{ user.enable_directory ? 1 : 0}}"){ :'ng-init' => "user.enable_directory = #{ current_user.enable_directory }" }
+					%input#favoriteListingNotifications.switch-input(type="checkbox" ng-model="user.enable_directory")
+					%label.switch-paddle(for="favoriteListingNotifications")
+						%span.show-for-sr Would you like to receive favorite listing activity updates?
+						%span.switch-active(aria-hidden="true") Yes
+						%span.switch-inactive(aria-hidden="true") No
+
+		.field.cell.small-12
+			%button.magic-button.secondary.large(type="submit" ng-click="validate = true"){ :"ng-disabled" => "!(profileForm.$valid)" } Save Changes
+
+= render :file => 'account/account'

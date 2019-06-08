@@ -1,0 +1,96 @@
+= render 'layouts/header'
+%header.header-sm.header-sale.hide
+	.grid-container
+		.center-middle
+			%h1 List for free. It only takes a few minutes.
+			.lead #{current_site.name} is here to help promote your products. All for free!
+			%a.button.success.large.has-shadow(scroll-to="#get-started")
+				Get Started. It's Free!
+				%i.flaticon-arrows-1
+%section.section-sm.section-white.hide
+	.grid-container
+		.grid-x.grid-padding-x
+			.large-4.medium-6.cell
+				.feature-item
+					.media-object
+						.media-object-section
+							%img{:src => asset_path("icon-01.png")}/
+						.media-object-section
+							%h4 Its Ultra - Fast!
+							%p You can post your listing in minutes. All we need is a few details about what you're selling.
+			.large-4.medium-6.cell
+				.feature-item
+					.media-object
+						.media-object-section
+							%img{:src => asset_path("icon-02.png")}/
+						.media-object-section
+							%h4 Its Safer!
+							%p Our network helps to keep your personal details secure. Shielded from reaching third parties.
+			.large-4.medium-6.large-offset-0.medium-offset-3.cell
+				.feature-item
+					.media-object
+						.media-object-section
+							%img{:src => asset_path("icon-03.png")}/
+						.media-object-section
+							%h4 It's Free!
+							%p Save money and grow your business! Our classifieds help get the word out to local searchers.
+
+%section#get-started.cta
+	.grid-container
+		.grid-x.grid-padding-x
+			.cell.text-center
+				.center-middle
+					%h2 List in a few minutes.
+					%p Get started below. It's free to post.
+
+= render 'account/listings/listing_form'
+%section.section-sm.section-plans.hide
+	.grid-container
+		%h2.h1.mb0 Select Your Perfect Plan
+		.lead.text-muted Find the plan that’s right for you. Start with a 7-day free trial.
+		.grid-x.grid-padding-x
+			- current_site.plans.where(active:true).where('amount > 0').order(:amount).limit(3).each do |plan|
+				.medium-4.cell
+					.card.card-plan{class: plan.recommended ? 'active' : nil}
+						.card-heading
+							%h3 #{ plan.name.upcase }
+							.plan-price
+								%sup $
+								%span.text-blue #{ plan.amount/100.00 }
+								\/ mo
+						.card-body
+							%ul.plan-list
+								%li.text-green Up to #{ pluralize(plan.metadata["listings"], 'listing') }
+								%li 24/7 Support
+								%li Cancel Whenever
+							%a.button.success{href: new_account_listing_path }
+								Get Started
+								%i.flaticon-long-arrow-right
+							- if plan.recommended
+								.recommended
+									%i.flaticon-recommended
+									Recommended
+			.cell.security.small-12.m-top-0.text-center
+				.security.text-green
+					%span.ss-icon check
+					%strong 30-day money back guarantee
+				.security.text-green
+					%span.ss-icon check
+					%strong Cancel whenever
+		/ /.grid-x
+%section.section-sm.section-audience.bb.section-white.hide
+	.grid-container
+		.grid-x.grid-padding-x
+			.large-5.medium-6.cell
+				.card.card-round
+					%img{:src => asset_path("img-01.png")}/
+			.medium-6.large-offset-1.cell.posr
+				.left-middle
+					%h3.h3.text-medium.mb15 Improve your sales by reaching a more direct audience
+					%p #{ current_site.name } reaches thousands of buyers every month. And good news - all these visitors are interested in products like yours!
+					%a.text-semibold{:href => current_user ? new_account_listing_path : new_user_session_path}
+						Get started selling
+						%i.flaticon-long-arrow-right
+
+= render 'layouts/footer_hero'
+= render 'layouts/footer'

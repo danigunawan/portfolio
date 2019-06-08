@@ -1,0 +1,32 @@
+%script(type="text/ng-template" id="auth/signup.html")
+	.grid-x.toolbar.grid-padding-x
+		.cell.small-12.medium-11.text-center.small-centered
+			%i.ss-icon.pull-left.ss-delete(ng-click="SessionService.closeModals()")
+			%strong
+				Sign Up
+	.custom-modal.auth
+		.grid-x.grid-padding-x
+			.cell.small-12.medium-10.large-10.small-centered
+				.grid-x.grid-margin-x
+					.cell.small-12.m-top-20.text-center.helper
+						%a Already have an account? Log in here.
+					.cell.small-6.m-top-20
+						%input(type="text" name="user[first_name]" placeholder="First Name")
+					.cell.small-6.m-top-20
+						%input(type="text" name="user[last_name]" placeholder="Last Name")
+					.cell.small-12
+						%input(type="email" name="user[email]" placeholder="Email Address")
+					.cell.small-12
+						%input.large(type="password" name="user[password]" placeholder="Password")
+					.cell.small-12
+						%input.large(type="password" name="user[password_confirmation]" placeholder="Confirm Password")
+					%a.cell.m-top-20.large.button.secondary(ng-click="choose_plan = false")
+						%span
+							Sign Up Free
+					%a.cell.m-top-10.text-center
+						Forgot your password?
+					.cell.m-top-20.text-center.helper
+						Use of this site constitues agreement to our
+						%a terms of service
+						and
+						%a privacy policy.

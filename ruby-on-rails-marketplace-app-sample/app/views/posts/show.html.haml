@@ -1,0 +1,120 @@
+= render 'layouts/header'
+%section.section-blog-post
+	.grid-container
+		.grid-x.grid-padding-x
+			.medium-8.cell
+				%h1
+					= @post.title
+				.date-detail
+					%span.text-muted by
+					%span.text-green #{ current_site.name }
+					%span.text-muted
+						Updated
+						= time_ago_in_words @post.updated_at
+						ago
+					%span.text-muted with
+					29 comments
+				%ul.list-share
+					%li Share on
+					%li
+						= render_shareable :buttons=> ['facebook', 'pinterest', 'twitter', 'linkedin'], :static_link => true, :facebook => { button_caption: "<i class='icon-facebook'></i>".html_safe}, :pinterest => { button_caption: "<i class='icon-pinterest'></i>".html_safe}, :twitter => { button_caption: "<i class='icon-twitter'></i>".html_safe}, :linkedin => { button_caption: "<i class='icon-linkedin'></i>".html_safe}
+				.blog-imglg
+					%img{:src => asset_path("blog/blog-01.jpg")}/
+				%p Whether you are looking to get daily inspiration, receive business advice, see beautiful and tasty recipes or si follow a new personality, Instagram offers a wide range of content and influencers for anyone’s preferences.
+				%p Regardless of what you are looking for these are the top accounts that can give you a glimpse in the highest quality content and how to maintain a top content channel.	Their variety of backgrounds let followers see uniq aspects of their lives along with their twist on a specific niche of content.
+				.grid-x.grid-padding-x
+					.medium-6.cell
+						.blog-imgmd
+							%img{:src => asset_path("blog/blog-02.jpg")}/
+					.medium-6.cell
+						%p Tim Karsliyev, founder of Daily Dose, has a 200+ million network on Instagram that can reach one out of four peo using Instagram. Today, Daily Dose is one of the biggest (and first) motivational accounts on Instagram. Daily Dose spreads influential messages that reach millions daily. He created Daily Dose because he believes we have a duty	act—not talk, not think, not imagine, but to step up and make a real difference.
+						%p Tonio Skits is a king of comedy with a
+				%p “Wild N’ Out” season 8 &amp; 9 starring Nick Cannon. Tonio has also been signed to Kevin Hart’s HARTBeat Digital Productions and is also in such high demand to host major red carpet events as a social media commentator, as well as parties globally. He is breaking barriers as a social media
+			.medium-4.cell
+				.blog-siderbar
+					.widget
+						%h3 MOST POPULAR ARTICLES
+						%ul.list-articles
+							%li
+								.media-object
+									.media-object-section
+										%a{:href => "#"}
+											%img{:src => asset_path("blog/blog-xsm-01.jpg")}/
+									.media-object-section
+										%h4
+											%a{:href => "#"} Selecting Hays For Horses
+										%p High quality forage normally
+							%li
+								.media-object
+									.media-object-section
+										%a{:href => "#"}
+											%img{:src => asset_path("blog/blog-xsm-01.jpg")}/
+									.media-object-section
+										%h4
+											%a{:href => "#"} Selecting Hays For Horses
+										%p High quality forage normally
+							%li
+								.media-object
+									.media-object-section
+										%a{:href => "#"}
+											%img{:src => asset_path("blog/blog-xsm-01.jpg")}/
+									.media-object-section
+										%h4
+											%a{:href => "#"} Selecting Hays For Horses
+										%p High quality forage normally
+%section.section-sm
+	.grid-container
+		.grid-x.grid-padding-x
+			.large-10.large-offset-1.cell
+				%h2.h2 Join The Conversation
+				%form.form-conversation
+					.grid-x.grid-padding-x
+						.medium-9.cell
+							.card.card-round
+								%textarea.input-nob{:placeholder => "Write something here", :rows => "2"}
+						.medium-3.cell
+							%button.button.btn-border-green.text-black.expanded{:type => "submit"} POST COMMENT
+				.comments
+					%h3 Other comments
+					.comment-item
+						.media-object
+							.media-object-section
+								%img.img-round{:src => asset_path("avatar.jpg")}/
+							.media-object-section
+								%h4
+									%span.text-green Admin
+									\/	2 days ago
+								%p Jay ! Un amoureux de la vie et du beau, qui transpose sa passion au service de Mère Nature qui n'arrête pas de nous surprendre... Un créateur exceptionnel, un ami qui nous manque, mais qui sait se faire pardonner de pars son talent !!!
+								%a.btn-reply{:href => "#"} REPLY
+								.media-object
+									.media-object-section
+										%img.img-round{:src => asset_path("avatar.jpg")}/
+									.media-object-section
+										%h4
+											%span.text-green Admin
+											\/	1 days ago
+										%p Jay ! Un amoureux de la vie et du beau, qui transpose sa passion au service de
+										%a.btn-reply{:href => "#"} REPLY
+					.comment-item
+						.media-object
+							.media-object-section
+								%img.img-round{:src => asset_path("avatar.jpg")}/
+							.media-object-section
+								%h4
+									%span.text-green Admin
+									\/	2 days ago
+								%p Jay ! Un amoureux de la vie et du beau, qui transpose sa passion au service de Mère Nature qui n'arrête pas de nous surprendre... Un créateur exceptionnel, un ami qui nous manque, mais qui sait se faire pardonner de pars son talent !!!
+								%a.btn-reply{:href => "#"} REPLY
+								.media-object
+									.media-object-section
+										%img.img-round{:src => asset_path("avatar.jpg")}/
+									.media-object-section
+										%h4
+											%span.text-green Admin
+											\/	1 days ago
+										%p Jay ! Un amoureux de la vie et du beau, qui transpose sa passion au service de
+										%a.btn-reply{:href => "#"} REPLY
+				.loadmore
+					%button.btn-text{:type => "button"} Show more comments
+= render 'layouts/footer_hero'
+= render 'layouts/footer'

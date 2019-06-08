@@ -1,0 +1,238 @@
+= content_for :title do
+	#{ @search.title } | #{ current_site.name }
+= content_for :description do
+	Free classifieds. Thousands of buyers and sellers. See all #{ @search.title } at #{current_site.name}.
+
+= content_for :footer_button do
+	.mapview-button.button.ng-cloak(ng-click="$rootScope.showMap = !$rootScope.showMap" ng-init="$rootScope.showMap=#{params[:latitude] ? 'true' : 'false'}")
+		%span(ng-hide="$rootScope.showMap") Map View
+		%span.ng-cloak(ng-show="$rootScope.showMap") List View
+	.sell-button.mobile-search-controls.hide-for-medium
+		.grid-x
+			%button.cell.small-6.button.primary(ng-click="$rootScope.showFilters = true")
+				%span.ss-icon search
+				%strong Filter Search
+			%a.button.secondary.success.cell.small-6{href:sell_path}
+				%span.ss-icon tag
+				%strong Post A Free Ad
+
+
+= render 'layouts/header'
+.search-container(ng-controller="market.SearchController")
+	- if false
+		%section.filters.show-for-medium(ng-class="showFilters ? 'mobile-overlay' : ''")
+			.grid-container.fluid.grid-padding-50
+				.grid-x.grid-padding-x
+					.medium-auto.cell
+						.form-filters
+							.grid-x.grid-padding-x
+								.xlarge-6.cell
+									.input-wrap
+										%label
+											%span Keywords
+											%input.blur-on-enter(ng-model="searchQuery.keywords" ng-focus="dirtySearchQuery()" placeholder="Refine your search with keywords" type="text" name="search[keywords]" ng-init="searchQuery.keywords = '#{ @search.keywords ? @search.keywords.titleize : '' }'")/
+								.xlarge-6.cell
+									.grid-x.grid-padding-x
+										.medium-6.cell
+											.input-wrap
+												%label
+													%span Category
+													%select.blur-on-enter.input-nob.ng-cloak(ng-model="searchQuery.category" ng-focus="dirtySearchQuery()" placeholder="Select Category" ng-options="categoryOption as ((categoryOption.category ? categoryOption.category.name + ' - ' : '') + categoryOption.name) for categoryOption in SessionService.TreeOfCategories track by categoryOption.id"){:"ng-init" => @search.category_id ? "searchQuery.category = {id: #{ @search.category_id }}" : nil}
+														%option(value="") All Categories
+										.medium-6.cell
+											.input-wrap
+												%label
+													%span Location
+													%input.blur-on-enter(ng-model="searchQuery.location" ng-focus="dirtySearchQuery()" ng-blur="searchQuery.reloadLocationCoords()"placeholder="Everywhere" type="text" name="search[location]" name="search[location]")/
+					.medium-4.cell
+						- if current_user
+							= form_tag account_saved_searches_path, { method: 'POST', class: 'form-inline filters-saved', name: "saveSearch", novalidate: true, enforce_utf8: false } do
+								%label
+									%select.input-tiny.input-nob.m-top-10(ng-model="savedSearch" ng-options="saved_search as saved_search.search.title.toUpperCase() for saved_search in SessionService.savedSearches track by saved_search.id" ng-change="navigateToSavedSearch()")
+										%option{:value => ""} CHOOSE SAVED
+								%button.button.tiny(ng-show="searchQuery.response.id" ng-class="!isSearchSaved(searchQuery.response.id) ? 'btn-border-grey' : 'btn-blue'" name="saved_search[search_id]" type="submit" value="{{ searchQuery.response.id }}")
+									%i.flaticon-floppy-disk(ng-show="!isSearchSaved(searchQuery.response.id)")
+									%span.ng-cloak(ng-bind="isSearchSaved(searchQuery.response.id) ? 'SEARCH SAVED' : 'SAVE SEARCH'")
+					.cell.small-12.large-shrink.hide-for-medium
+						%button.button.expanded.large.m-top-50(ng-click="showFilters = false") Search
+
+	- alternate_latitude = nil
+	- alternate_longitude = nil
+
+	- [@search.listings(params[:page]).results.first].each do |listing|
+		- alternate_latitude ||= listing.latitude if listing
+		- alternate_longitude ||= listing.longitude if listing
+	%section#results
+		.grid-x.fluid.cell.auto
+			.large-auto.cell(ng-class="$rootScope.showMap ? 'show-for-small': 'show-for-large'"){class: params[:latitude] ? 'show-for-small' : 'show-for-large', :'ng-init' => "searchQuery.latitude = #{params[:latitude] ? params[:latitude] : (location ? location.latitude : alternate_latitude)};searchQuery.longitude = #{params[:longitude] ? params[:longitude] : (location ? location.longitude : alternate_longitude)}"}
+				.listings-map
+					#map
+			.medium-12.large-5.cell.search-results-container(ng-class="$rootScope.showMap ? 'show-for-large' : 'show-for-small'"){class: params[:latitude] ? 'show-for-large' : 'show-for-small'}
+				.search-meta
+					- if true
+						%h1
+							%span(ng-bind="searchQuery.response.title")
+							%span(ng-show="!searchQuery.response.title")
+								= @search.title
+						%h3.search-rsinfo.hide
+							%span(ng-pluralize count="searchQuery.response.count" when="{'0': '0 listings', 'one': '1 listing', 'other': '{} listings'}")
+							%span(ng-hide="searchQuery.response.results") #{pluralize(@search.listings.total, 'listings')}
+				.filters.show-for-medium(ng-class="$rootScope.showFilters ? 'mobile-overlay' : ''")
+					%h5.text-center.filter-title
+						%strong Filter Search
+					%label.grid-x
+						%span.small-12.medium-6.cell Keywords
+						%input.small-12.medium-6.cell.blur-on-enter(ng-model="searchQuery.keywords" ng-focus="dirtySearchQuery()" placeholder="Refine your search with keywords" type="text" name="search[keywords]" ng-init="searchQuery.keywords = '#{ @search.keywords ? @search.keywords.titleize : '' }'")/
+					%label.grid-x
+						%span.cell.small-12.medium-6 Category
+						%select.blur-on-enter.cell.small-12.medium-6.ng-cloak(ng-model="searchQuery.category" ng-focus="dirtySearchQuery()" placeholder="Select Category" ng-options="categoryOption as ((categoryOption.category ? categoryOption.category.name + ' - ' : '') + categoryOption.name) for categoryOption in SessionService.TreeOfCategories track by categoryOption.id"){:"ng-init" => @search.category_id ? "searchQuery.category = {id: #{ @search.category_id }}" : nil}
+							%option(value="") All Categories
+					- if false && current_user
+						= form_tag account_saved_searches_path, { method: 'POST', class: 'form-inline filters-saved', name: "saveSearch", novalidate: true, enforce_utf8: false } do
+							%label
+								%select.input-tiny.input-nob.m-top-10(ng-model="savedSearch" ng-options="saved_search as saved_search.search.title.toUpperCase() for saved_search in SessionService.savedSearches track by saved_search.id" ng-change="navigateToSavedSearch()")
+									%option{:value => ""} CHOOSE SAVED
+							%button.button.tiny(ng-show="searchQuery.response.id" ng-class="!isSearchSaved(searchQuery.response.id) ? 'btn-border-grey' : 'btn-blue'" name="saved_search[search_id]" type="submit" value="{{ searchQuery.response.id }}")
+								%i.flaticon-floppy-disk(ng-show="!isSearchSaved(searchQuery.response.id)")
+								%span.ng-cloak(ng-bind="isSearchSaved(searchQuery.response.id) ? 'SEARCH SAVED' : 'SAVE SEARCH'")
+					.medium-shrink.cell.small-12.text-align-right
+						%button.search-button.button.expanded(ng-click="$rootScope.showFilters = false") Search
+
+				.search-results
+					.m-top-20.results.cell(ng-class="{'results-loading': searchQuery.loadingNewResults}")
+						.ng-cloak(ng-repeat="listing in searchQuery.response.results track by listing.id")
+							.cell.ng-cloak(ng-if="$index == 5")
+								.ad-well
+									- if false
+										= render "layouts/ads/carbon/top_leader_728_90"
+									= render "layouts/ads/ad_unit_responsive"
+							.cell.result.list-result(ng-class="listing.type")
+								.card.cell.small-12
+									.grid-x.grid-margin-x
+										%a.cell.small-12.medium-2.media.ng-cloak(href="{{ listing.url }}" title="{{ listing.title }}")
+											%img.ng-cloak(ng-src="{{ listing.photos && listing.photos.length > 0 ? listing.photos[0].url : null }}" ng-if="listing.photos && listing.photos.length > 0")
+											.align-center-center
+												%span.ss-icon.ss-tag
+												%span.ss-icon.ss-buildings
+												%br
+												%span.category
+													{{ listing.category ? listing.category.name : 'For Sale' }}
+										.cell.description(ng-class="listing.type == 'business' ? 'small-8 medium-auto' : 'small-10 medium-8'")
+											%h4
+												%a(href="{{ listing.url }}" title="{{ listing.title || listing.name }}")
+													{{ listing.contact_name || listing.title || listing.name }}
+												.price.float-right(ng-if="listing.type!='business'")
+													%span.text-blue
+														{{ listing.price }}
+													{{ listing.price_unit }}
+											.address
+												%i.flaticon-signs
+												{{ listing.safe_address }}
+											%p
+												%a(href="{{ listing.url }}" title="{{ listing.title || listing.name }}" ng-bind-html="trustAsHtml(listing.description)")
+											.tags(ng-if="listing.type=='business' && listing.tags.length")
+												%a.text-blue(ng-repeat="tag in listing.tags" ng-href="{{tag.url}}" ng-bind="tag.name")
+											- if false
+												.stats(ng-if="listing.type=='business'")
+													%small 0 Current Listings, 2 Past Listings
+
+										.cell.small-shrink.show-for-medium.business-details(ng-if="listing.type == 'business'")
+											.grid-x
+												- if false
+													.cell.small-12
+														.listing-counter
+															.count 2
+															%strong Listings
+												.small-4
+													%span.ss-icon.text-blue earth
+												.small-4
+													%span.ss-icon.text-muted mail
+												.small-4
+													%span.ss-icon.text-blue phone
+						- @search.listings(params[:page]).results.each do |listing|
+							- alternate_latitude ||= listing.latitude if listing
+							- alternate_longitude ||= listing.longitude if listing
+							- if true
+								.cell.result.list-result(ng-hide="searchQuery.response.results"){class:listing.is_a?(Business) ? 'business' : 'listing'}
+									.card.cell.small-12
+										.grid-x.grid-margin-x
+											%a.cell.small-12.medium-2.media{:href=>listing_path(listing), title: listing.title }
+												- if listing.is_a?(Listing) && listing.photos && listing.photos.at(0)
+													%img{ src: listing.photos.at(0).url }
+												.align-center-center
+													%span.ss-icon.ss-tag
+													%span.ss-icon.ss-buildings
+													%br
+													%span.category
+														#{ listing.is_a?(Listing) && listing.category ? listing.category.name : 'For Sale' }
+											.cell.description{class:listing.is_a?(Business) ? 'small-8 medium-auto' : 'small-10 medium-8'}
+												%h4
+													%a{:href=>listing_path(listing), title: listing.title }
+														= listing.contact_name || listing.title.titleize || listing.name
+													- if !listing.is_a? Business
+														.price.float-right
+															%span.text-blue
+																= listing.price
+															= listing.price_unit_formatted
+												.address
+													%i.flaticon-signs
+													= listing.safe_address
+												%p
+													%a{:href=>listing_path(listing), title: listing.title }
+														= truncate(listing.description_clean(current_user), length:100)
+
+												- if listing.is_a? Business
+													.tags
+														= succeed ',' do
+															%a.text-blue<
+																Hay
+														= succeed ',' do
+															%a.text-blue<
+																Alfalfa
+														%a.text-blue<
+															Cattle
+													.stats
+														%small 0 Current Listings, 2 Past Listings
+
+											- if listing.is_a? Business
+												.cell.small-shrink.show-for-medium.business-details
+													.grid-x
+														- if false
+															.cell.small-12
+																.listing-counter
+																	.count 2
+																	%strong Listings
+														.small-4
+															%span.ss-icon.text-blue earth
+														.small-4
+															%span.ss-icon.text-muted mail
+														.small-4
+															%span.ss-icon.text-blue phone
+
+				.cell.small-12.text-center.pagination.m-top-20
+					.grid-x.grid-padding-x
+						- if !current_site.env['FACEBOOK_URL'].blank?
+							.cell.small-12
+								.favorites-container
+									%h5
+										%strong Enjoying #{current_site.name}? Like us on Facebook!
+									.fb-like(data-layout="button" data-action="like" data-size="large" data-show-faces="false" data-share="true"){data:{href:current_site.env['FACEBOOK_URL']}}
+						.cell.small-6(ng-show="searchQuery.response.results && searchQuery.pages > 1")
+							%a.button.radius.hollow.large.previous_page.expanded(ng-class="searchQuery.page <= 1 ? 'disabled' : null" ng-disabled="searchQuery.page <= 1" rel="previous" ng-href="{{ searchQuery.previousPageUrl }}") Previous
+						.cell.small-6(ng-show="searchQuery.response.results && searchQuery.pages > 1")
+							%a.button.radius.hollow.large.next_page.expanded(ng-class="searchQuery.page >= searchQuery.pages ? 'disabled' : null" ng-disabled="searchQuery.page >= searchQuery.pages" rel="next" ng-href="{{ searchQuery.nextPageUrl }}") Next
+
+				.cell
+					.ad-well
+						= render "layouts/ads/carbon/bottom_leader_728_90"
+				.footer-mini.hide-for-medium.m-top-50
+					%ul.footer-mini-menu.clearfix
+						%li
+							%a.logo{:href => root_path}
+								#{current_site.name}
+						%li
+							%a{:href => sell_path} Post A Free Ad
+						%li
+							%a{:href => about_path} About
+						%li
+							%a{:href => terms_path} Terms &amp; Conditions

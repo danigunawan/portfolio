@@ -1,0 +1,26 @@
+%script(type="text/ng-template" id="auth/login.html")
+	.grid-x.toolbar.grid-padding-x
+		.cell.small-12.medium-11.text-center.small-centered
+			%i.ss-icon.pull-left.ss-delete(ng-click="SessionService.closeModals()")
+			%strong
+				Log In
+	.custom-modal.auth
+		.grid-x.grid-padding-x
+			.cell.small-12.medium-10.large-10.small-centered
+				= form_tag user_session_path, method: :post, class: 'grid-x grid-margin-x' do
+					.cell.small-12.m-top-20.text-center
+						%a.helper{} Don't have and account? Sign up here.
+					.cell.small-12.m-top-20
+						%input(type="email" name="user[email]" placeholder="Email Address")
+					.cell.small-12
+						%input.large(type="password" name="user[password]" placeholder="Password")
+					%button.cell.m-top-20.large.button.secondary(type="submit")
+						%span
+							Login
+					%a.cell.m-top-10.text-center
+						Forgot your password?
+					.cell.m-top-20.text-center.helper
+						Use of this site constitues agreement to our
+						%a terms of service
+						and
+						%a privacy policy.

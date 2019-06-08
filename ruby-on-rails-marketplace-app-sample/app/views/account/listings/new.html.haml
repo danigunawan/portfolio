@@ -1,0 +1,11 @@
+= content_for :account_nav_bar_content do
+	%strong New Listing
+	%span List your stuff on #{ current_site.name }.
+
+= content_for :content do
+	= render 'layouts/header'
+	= render 'listing_form'
+	= render 'layouts/footer_hero'
+	= render 'layouts/footer'
+
+= render :file => 'layouts/application'

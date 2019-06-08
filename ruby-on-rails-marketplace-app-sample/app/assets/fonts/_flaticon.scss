@@ -1,0 +1,119 @@
+    /*
+    Flaticon icon font: Flaticon
+    Creation date: 30/11/2017 09:36
+    */
+
+    @font-face {
+  font-family: "Flaticon";
+  src: url("./Flaticon.eot");
+  src: url("./Flaticon.eot?#iefix") format("embedded-opentype"),
+       url("./Flaticon.woff") format("woff"),
+       url("./Flaticon.ttf") format("truetype"),
+       url("./Flaticon.svg#Flaticon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "Flaticon";
+    src: url("./Flaticon.svg#Flaticon") format("svg");
+  }
+}
+
+    .fi:before{
+        display: inline-block;
+  font-family: "Flaticon";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+    }
+
+    .flaticon-pin:before { content: "\f100"; }
+.flaticon-facebook-logo:before { content: "\f101"; }
+.flaticon-technology-1:before { content: "\f102"; }
+.flaticon-avatar:before { content: "\f103"; }
+.flaticon-magnifying-glass:before { content: "\f104"; }
+.flaticon-heart:before { content: "\f105"; }
+.flaticon-right-arrow-1:before { content: "\f106"; }
+.flaticon-left-arrow-1:before { content: "\f107"; }
+.flaticon-down-arrow-1:before { content: "\f108"; }
+.flaticon-technology:before { content: "\f109"; }
+.flaticon-circle:before { content: "\f10a"; }
+.flaticon-facebook-social-symbol:before { content: "\f10b"; }
+.flaticon-search-interface-symbol:before { content: "\f10c"; }
+.flaticon-add-circular-outlined-button:before { content: "\f10d"; }
+.flaticon-add-circular-button:before { content: "\f10e"; }
+.flaticon-check-mark-sign:before { content: "\f10f"; }
+.flaticon-long-arrow-pointing-to-the-right:before { content: "\f110"; }
+.flaticon-double-angle-pointing-to-right:before { content: "\f111"; }
+.flaticon-twitter-logo-silhouette:before { content: "\f112"; }
+.flaticon-linkedin-button:before { content: "\f113"; }
+.flaticon-like-heart-outline-symbol:before { content: "\f114"; }
+.flaticon-phone-call:before { content: "\f115"; }
+.flaticon-exclamation:before { content: "\f116"; }
+.flaticon-left-arrow:before { content: "\f117"; }
+.flaticon-signs:before { content: "\f118"; }
+.flaticon-photo-camera-1:before { content: "\f119"; }
+.flaticon-photo-camera:before { content: "\f11a"; }
+.flaticon-star:before { content: "\f11b"; }
+.flaticon-play-button:before { content: "\f11c"; }
+.flaticon-down-arrow:before { content: "\f11d"; }
+.flaticon-arrows-4:before { content: "\f11e"; }
+.flaticon-close:before { content: "\f11f"; }
+.flaticon-right-arrow:before { content: "\f120"; }
+.flaticon-recommended:before { content: "\f121"; }
+.flaticon-help-button:before { content: "\f122"; }
+.flaticon-arrows-3:before { content: "\f123"; }
+.flaticon-arrows-2:before { content: "\f124"; }
+.flaticon-upload:before { content: "\f125"; }
+.flaticon-arrows-1:before { content: "\f126"; }
+.flaticon-arrows:before { content: "\f127"; }
+    
+    $font-Flaticon-pin: "\f100";
+    $font-Flaticon-facebook-logo: "\f101";
+    $font-Flaticon-technology-1: "\f102";
+    $font-Flaticon-avatar: "\f103";
+    $font-Flaticon-magnifying-glass: "\f104";
+    $font-Flaticon-heart: "\f105";
+    $font-Flaticon-right-arrow-1: "\f106";
+    $font-Flaticon-left-arrow-1: "\f107";
+    $font-Flaticon-down-arrow-1: "\f108";
+    $font-Flaticon-technology: "\f109";
+    $font-Flaticon-circle: "\f10a";
+    $font-Flaticon-facebook-social-symbol: "\f10b";
+    $font-Flaticon-search-interface-symbol: "\f10c";
+    $font-Flaticon-add-circular-outlined-button: "\f10d";
+    $font-Flaticon-add-circular-button: "\f10e";
+    $font-Flaticon-check-mark-sign: "\f10f";
+    $font-Flaticon-long-arrow-pointing-to-the-right: "\f110";
+    $font-Flaticon-double-angle-pointing-to-right: "\f111";
+    $font-Flaticon-twitter-logo-silhouette: "\f112";
+    $font-Flaticon-linkedin-button: "\f113";
+    $font-Flaticon-like-heart-outline-symbol: "\f114";
+    $font-Flaticon-phone-call: "\f115";
+    $font-Flaticon-exclamation: "\f116";
+    $font-Flaticon-left-arrow: "\f117";
+    $font-Flaticon-signs: "\f118";
+    $font-Flaticon-photo-camera-1: "\f119";
+    $font-Flaticon-photo-camera: "\f11a";
+    $font-Flaticon-star: "\f11b";
+    $font-Flaticon-play-button: "\f11c";
+    $font-Flaticon-down-arrow: "\f11d";
+    $font-Flaticon-arrows-4: "\f11e";
+    $font-Flaticon-close: "\f11f";
+    $font-Flaticon-right-arrow: "\f120";
+    $font-Flaticon-recommended: "\f121";
+    $font-Flaticon-help-button: "\f122";
+    $font-Flaticon-arrows-3: "\f123";
+    $font-Flaticon-arrows-2: "\f124";
+    $font-Flaticon-upload: "\f125";
+    $font-Flaticon-arrows-1: "\f126";
+    $font-Flaticon-arrows: "\f127";

@@ -1,0 +1,176 @@
+= content_for :title do
+	#{ current_site.name } | #{ @listing.category_name } For Sale - #{ truncate(title(@listing.description_clean(current_user)), length: 40) }
+
+- content_for :description do
+	#{ @listing.safe_address } - #{ @listing.price } #{ @listing.price_unit_formatted ? @listing.price_unit_formatted : '' } | #{ @listing.description } – Search more #{ @listing.category_name.downcase } for sale on #{ current_site.name }
+
+= content_for :content do
+	= render 'layouts/header'
+	= render 'rich_snippets', { listing: @listing }
+	.grid-x.listing-page(ng-controller="market.ShowListingController")
+		.cell.large-7
+			.gallery
+				- @listing.listing_photos.map(&:photo).each do |photo|
+					.gallery-item
+						%img{:src => photo.url}/
+				#product-map.gallery-item
+			.details
+				%h4.price
+					%a{href:"/#{@listing.category.name.parameterize}-for-sale"} #{@listing.category.name} For Sale
+					%span.text-muted >
+					%span.text-blue
+						= @listing.price
+					- if @listing.price_unit_formatted
+						= @listing.price_unit_formatted
+					.fb-like.float-right(data-layout="button" data-action="like" data-size="large" data-show-faces="false" data-share="true"){data:{href:request.original_url}}
+				%h1.title
+					#{@listing.title.titleize}
+				%a.location{href:"/#{@listing.category.name.parameterize}-for-sale/#{@listing.safe_address.parameterize}"}
+					%i.flaticon-signs
+					= @listing.safe_address
+				.description
+					%p #{@listing.description_clean(current_user)}
+			= render "layouts/ads/carbon/right_rail_300_250"
+			- if @listing.category_attribute_values.count > 0
+				- @listing.category_attribute_values.each_with_index do |i, index|
+					- if i.category_attribute
+						.listing-attribute.grid-x
+							%h4.cell.shrink
+								= i.category_attribute.name
+							%p.cell.auto.text-right
+								- if i.category_attribute.boolean
+									= i.float_value == 1.0 ? "Yes" : "No"
+								- else
+									= i.value
+			.favorites-container
+				- if current_user && favorite = current_user.favorites.where(listing_id: @listing.id).first
+					%p
+						You've saved this listing! We'll alert you when similar results become available.
+					%a.button.secondary.expanded(data-method="DELETE"){href: account_favorite_path(favorite)}
+						Remove
+				- else
+					%p
+						Love this listing? We can alert you when similar results become available.
+					%a.button.success.expanded(data-method="POST"){href: account_favorites_path.add_param_to_uri('listing_id', @listing.id)}
+						Save
+
+			- if current_site != @listing.site
+				.contact-form.grid-x
+					.cell
+						%h5.text-center
+							%strong This listing is syndicated from our partner site <a target="_blank" href="https://#{ @listing.site.host}#{ listing_path(@listing) }">#{ @listing.site.name}</a>
+					.cell.text-center.m-top-20
+						%a.button.primary{href:"https://#{ @listing.site.host}#{ listing_path(@listing) }"}
+							Contact The Seller At #{ @listing.site.name}
+
+						%p.m-top-20 You must confirm your email after signup to contact sellers.
+			- else
+				- if current_user && current_user.confirmed?
+					= form_tag contact_listing_path(@listing), method: :post, class: 'contact-form grid-x' do
+						.cell.seller-info
+							Contact
+							= @listing.contact_name
+						.cell
+							%input{:name => "listing_message[name]", :placeholder => "Your name", :type => "text", :value => current_user ? current_user.full_name : ''}/
+							%input{:name => "listing_message[phone]", :placeholder => "Your phone number", :type => "text", :value => current_user ? current_user.contact_phone : ''}/
+							%input{:name => "listing_message[from_email]", :placeholder => "Your email", :type => "email", :value => current_user ? current_user.email : ''}/
+							%textarea(maxlength="150"){:name => "listing_message[body]", :placeholder => "Your message", :rows => "3"}
+
+							%button.button.success.medium.cell{:type => "submit"}
+								Send Message
+								%i.flaticon-long-arrow-right
+							%a.expanded.terms{href:terms_path, target: "_blank"} Terms Of Service
+				- else
+					.contact-form.grid-x
+						.cell.seller-info
+							Contact
+							= @listing.contact_name
+						- if current_user && !current_user.confirmed?
+							.cell
+								%h5.text-center
+									%strong
+										Hi, #{ current_user.full_name }!
+									Welcome aboard!
+									We've sent you email confirmation instructions. Please confirm your email to contact sellers.
+									%a(data-method="POST"){href: confirmation_path(current_user)} Resend Instructions
+								%br
+								%p.text-center
+									Under some circumstances, it may take a
+									%br
+									few minutes for the confirmation email to be delivered.
+						- else
+							.cell
+								%h5.text-center
+									%strong Please login or signup to contact sellers.
+
+							.cell.text-center.m-top-20
+								%a.button.primary.small-6{href:new_user_registration_path}
+									Sign Up
+								%a.button.success.small-6{href:new_user_session_path}
+									Log In
+
+								%p.m-top-20 You must confirm your email after signup to contact sellers.
+
+
+		.cell.large-5
+			.grid-x.results.suggested-listings
+				- recommended_listings(count=10, listing=@listing, site=current_site).each do |listing|
+					.cell.result.list-result{class:listing.is_a?(Business) ? 'business' : 'listing'}
+						.card.cell.small-12
+							.grid-x
+								%a.cell.small-12.medium-2.media{:href=>listing_path(listing), title: listing.title }
+									- if listing.is_a?(Listing) && listing.photos && listing.photos.at(0)
+										%img{ src: listing.photos.at(0).url }
+									.align-center-center
+										%span.ss-icon.ss-tag
+										%span.ss-icon.ss-buildings
+										%br
+										%span.category
+											#{ listing.is_a?(Listing) && listing.category ? listing.category.name : 'For Sale' }
+								.cell.description{class:listing.is_a?(Business) ? 'small-8 medium-auto' : 'small-10 medium-8'}
+									%h4
+										%a{:href=>listing_path(listing), title: listing.title }
+											= listing.contact_name || listing.title.titleize || listing.name
+										- if !listing.is_a? Business
+											.price.float-right
+												%span.text-blue
+													= listing.price
+												= listing.price_unit_formatted
+									.address
+										%i.flaticon-signs
+										= listing.safe_address
+									%p
+										%a{:href=>listing_path(listing), title: listing.title }
+											= truncate(listing.description_clean(current_user), length:100)
+
+									- if listing.is_a? Business
+										.tags
+											= succeed ',' do
+												%a.text-blue<
+													Hay
+											= succeed ',' do
+												%a.text-blue<
+													Alfalfa
+											%a.text-blue<
+												Cattle
+										.stats
+											%small 0 Current Listings, 2 Past Listings
+
+								- if listing.is_a? Business
+									.cell.small-shrink.show-for-medium.business-details
+										.grid-x
+											- if false
+												.cell.small-12
+													.listing-counter
+														.count 2
+														%strong Listings
+											.small-4
+												%span.ss-icon.text-blue earth
+											.small-4
+												%span.ss-icon.text-muted mail
+											.small-4
+												%span.ss-icon.text-blue phone
+
+
+	= render 'layouts/footer_hero'
+	= render 'layouts/footer'

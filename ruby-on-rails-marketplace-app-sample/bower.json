@@ -1,0 +1,55 @@
+{
+  "name": "market",
+  "version": "0.0.0",
+  "homepage": "https://github.com/ivannoel",
+  "authors": [
+    "ivannoel"
+  ],
+  "description": "Angular JS App",
+  "license": "Private",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "latest",
+    "foundation-sites": "6.4.2",
+    "angular-route": "latest",
+    "angular-ui-router": "latest",
+    "angular-ui-ace": "latest",
+    "ng-file-upload": "latest",
+    "ng-file-upload-shim": "latest",
+    "angular-material": "latest",
+    "restangular": "latest",
+    "modernizr": "latest",
+    "jquery": "2.1.1",
+    "jqueryui": "1.10.3",
+    "blueimp-tmpl": "latest",
+    "angular-youtube-mb": "latest",
+    "angular-ui-tree": "latest",
+		"angular-google-places-autocomplete": "latest",
+    "gridster": "latest",
+    "angular-bootstrap": "latest",
+    "ngSticky": "latest",
+    "ng-clip": "latest",
+    "lodash": "2.4.1",
+		"angular-google-maps": "2.3.3",
+		"angular-simple-logger": "latest",
+		"materialize": "latest",
+		"angular-inview": "latest",
+		"ng-image-gallery": "latest",
+		"dyn-css": "latest",
+		"ng-tags-input": "latest",
+		"angular-money-directive": "latest",
+		"angular-foundation": "latest",
+		"angular-bootstrap-slider": "latest"
+  },
+  "resolutions": {
+    "angular": "1.6.5",
+    "jquery": ">= 3.0.0",
+    "lodash": "~4.17.0"
+  }
+}

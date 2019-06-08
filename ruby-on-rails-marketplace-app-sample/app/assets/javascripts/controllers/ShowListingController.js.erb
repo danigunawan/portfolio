@@ -1,0 +1,61 @@
+angular.module('market')
+	.controller('market.ShowListingController', function ($scope, $http, $timeout) {
+		$scope.listing = {};
+
+		$http.get(document.location.pathname + '.json').then(
+			function(response) {
+				console.log(response);
+				$scope.listing = response.data
+				$scope.initMap();
+			},function (error) {
+				console.log(error);
+			}
+		);
+
+		$scope.galleryIndex = 0;
+		$scope.galleryItems = 1;
+		$scope.initGallery = function(totalItems) {
+			$scope.galleryItems = totalItems;
+		}
+
+		$scope.nextGallery = function () {
+			if ($scope.galleryIndex >= $scope.galleryItems)
+				return $scope.galleryIndex = 0;
+			return $scope.galleryIndex = $scope.galleryIndex + 1;
+		}
+
+		$scope.prevGallery = function () {
+			if ($scope.galleryIndex <= 0)
+				return $scope.galleryIndex = $scope.galleryItems;
+			return $scope.galleryIndex = $scope.galleryIndex - 1;
+		}
+
+
+
+		// Initialize listing location map.
+		$scope.initMap = function () {
+			var map = new google.maps.Map(document.getElementById('product-map'), {
+				zoom: 8,
+				center: {
+					lat: $scope.listing.latitude,
+					lng: $scope.listing.longitude
+				}
+			});
+
+			var marker = new RichMarker({
+					marker_id: $scope.listing.id,
+					map: map,
+					position: new google.maps.LatLng($scope.listing.latitude, $scope.listing.longitude),
+					flat: true,
+					content: '<div class="marker ' + ($scope.listing.photos && $scope.listing.photos.length ? '' : 'no-photo') + '" href="' + $scope.listing.url + '" target="_blank"><div class="img-container">' + ($scope.listing.photos && $scope.listing.photos.length ? ('<img src="' + $scope.listing.photos[0].url + '">') : ('')) + '</div><div class="price"><span class="text-blue">' + (listing.price || listing.name) + '</span> ' + (listing.price_unit ? listing.price_unit : '') + '</div></div>'
+			});
+		};
+
+		// Load slide show gallery.
+		$('.gallery').slick({
+			slidesToShow: 1,
+			slidesToScroll: 1,
+			arrows: true,
+			fade: false
+		});
+	});

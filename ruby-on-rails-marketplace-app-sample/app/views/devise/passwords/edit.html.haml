@@ -1,0 +1,39 @@
+= render 'layouts/header'
+%section.section.form-signin
+	= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f|
+		.grid-container
+			.grid-x.grid-padding-x
+				.large-8.large-offset-2.cell
+					= f.hidden_field :reset_password_token
+					%h1.h2 Change your #{ current_site.name } password.
+					- if @minimum_password_length
+						%p
+							(#{ @minimum_password_length } characters minimum)
+
+					.card.card-round
+						%label.aslabel.mb0
+							New password
+							= f.password_field :password, autofocus: true, autocomplete: "off", class: 'input-nob'
+					.card.card-round
+						%label.aslabel.mb0
+							Confirm new password
+							= f.password_field :password_confirmation, autocomplete: "off", class: 'input-nob'
+					.grid-x.grid-padding-x
+						.small-12.medium-6.cell
+							%button.button.success.medium.expand{:type => "submit"}
+								Change my password
+								%i.flaticon-long-arrow-right
+						.small-12.cell.m-top-20
+							= devise_error_messages!
+					.grid-x.grid-padding-x.sign-upbtn
+						.small-12.medium-6.cell
+							%p Dont Have An Account?
+							%a.button.btn-border-green.large.expand{:href => new_registration_path(resource_name)}
+								%strong
+									Create it now for free
+									%i.flaticon-long-arrow-right
+							- flash.each do |key, value|
+								.flash.error{class: key}
+									= value
+= render 'layouts/footer_hero'
+= render 'layouts/footer'

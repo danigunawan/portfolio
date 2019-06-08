@@ -1,0 +1,35 @@
+
+!!!
+%html{:lang => "en"}
+	%head
+		%meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+		%base{ href: "/" }
+
+		%title
+			#{ title ||= (content_for?(:title) ? yield(:title) : current_site.name) }
+		%link(rel="icon" type="image/png"){ href: current_site.settings['FAVICON_IMAGE_URL'] ? current_site.settings['FAVICON_IMAGE_URL'] : image_url("app-icon-#{current_site.name.downcase.at(0)}.png") }/
+		%link(href='https://fonts.googleapis.com/css?family=Nunito:400,600,800,900' rel='stylesheet' type='text/css')
+		%link(href="https://fonts.googleapis.com/css?family=Arvo" rel="stylesheet")
+		%meta{charset: "utf-8"}/
+		%meta{content: "IE=edge", "http-equiv" => "X-UA-Compatible"}/
+		%meta{content: "width=device-width, initial-scale=1", name: "viewport"}/
+		%meta{content: description(yield(:description)), name: "description" }/
+		%meta{content: keywords(yield(:keywords)), name: "keywords" }/
+		%meta{name: "google-site-verification", content: current_site.settings['GOOGLE_SITE_VERIFICATION']}/
+
+		= render "layouts/global_rich_snippets"
+		= yield :canonical
+		- if !params[:iframe]
+			- cache current_site do
+				= render "layouts/analytics"
+
+		= csrf_meta_tags
+		= stylesheet_link_tag "application", media: "all",  type: "text/css", 'data-turbolinks-track' => true
+		= render "layouts/ads/carbon_header_tag"
+		= render 'layouts/footer_scripts'
+	- has_notifications = flash[:notice_error] || flash[:notice_success] || flash[:notice_warning] || (current_user && !current_user.confirmed?)
+	%body.p0{ ng: { app: "market" }, class: current_site.settings["headliner"] ? "has-headliner" : nil }
+		= content_for?(:content) ? yield(:content) : yield
+		- if current_user
+			= render "modals/subscription"
+		= render "modals/help"

@@ -1,0 +1,109 @@
+= content_for :account_header_content do
+	Update your profile and notification settings.
+
+= content_for :account_content do
+	= form_tag account_profile_path, { method: 'PUT', class: 'form profile grid-x grid-margin-x align-top', name: "profileForm", novalidate: true } do
+
+		%h2.title.cell.small-12 Edit Your Profile
+
+		.field.well.name.cell.small-12.medium-6(ng-class="{error: (profileForm[\"profile[first_name]\"].$touched || validate) && profileForm[\"profile[first_name]\"].$invalid }")
+			%label First Name
+			%input(placeholder="John" name="profile[first_name]" ng-model="profile.first_name" required type="text"){value: @profile.first_name, :'ng-init' => "profile.first_name = '#{@profile.first_name}'"}
+			- if @profile.errors.messages[:last_name]
+				.error.cell.small-12
+					Please enter your first name.
+
+		.field.well.name.cell.small-12.medium-6(ng-class="{error: (profileForm[\"profile[last_name]\"].$touched || validate) && profileForm[\"profile[last_name]\"].$invalid }")
+			%label Last Name
+			%input(placeholder="Smith" name="profile[last_name]" ng-model="profile.last_name" required type="text"){value: @profile.last_name, :'ng-init' => "profile.last_name = '#{@profile.last_name}'"}
+			- if @profile.errors.messages[:last_name]
+				.error.cell.small-12
+					Email is already taken by a different account.
+
+		.field.well.name.cell.small-12.medium-6(ng-class="{error: (profileForm[\"profile[email]\"].$touched || validate) && profileForm[\"profile[email]\"].$invalid }")
+			%label Email Address
+			%input(placeholder="John Doe" name="profile[email]" ng-model="profile.email" required type="text"){value: @profile.email, :'ng-init' => "profile.email = '#{@profile.email}'"}
+			- if @profile.errors.messages[:username]
+				.error.cell.small-12
+					Email is already taken
+
+		.field.well.name.cell.small-12.medium-6(ng-class="{error: (profileForm[\"profile[contact_phone]\"].$touched || validate) && profileForm[\"profile[contact_phone]\"].$invalid }")
+			%label Phone Number
+			%input(placeholder="e.g. (212) 321-4241" name="profile[contact_phone]"  type="text" ng-model="profile.contact_phone" required){value: @profile.contact_phone, :'ng-init' => "profile.contact_phone = '#{@profile.contact_phone}'"}
+			- if @profile.errors.messages[:contact_phone]
+				.error.cell.small-12
+					Email is already taken by a different account.
+
+		%h2.title.field.cell.small-12 Notification Settings
+
+		.field.well.activitiy-notifications.cell.small-12.grid-x
+			.small-12.medium-auto
+				%label Weekly activity updates?
+				Get weekly activity updates for your listings.
+			.small-12.medium-shrink
+				.switch.large.radius.m-top-10
+					%input(type="hidden" name="profile[activity_notifications]" value="{{ profile.activity_notifications ? 1 : 0}}"){ :'ng-init' => "profile.activity_notifications = #{ @profile.activity_notifications }" }
+					%input#activityNotifications.switch-input(type="checkbox" ng-model="profile.activity_notifications")
+					%label.switch-paddle(for="activityNotifications")
+						%span.show-for-sr Would you like to receive weekly activity updates?
+						%span.switch-active(aria-hidden="true") Yes
+						%span.switch-inactive(aria-hidden="true") No
+
+		.field.well.favorite-notifications.cell.small-12.grid-x
+			.small-12.medium-auto
+				%label Favorites updated?
+				Get updates when your favorited listings are updated.
+			.small-12.medium-shrink
+				.switch.large.radius.m-top-10
+					%input(type="hidden" name="profile[favorite_listing_notifications]" value="{{ profile.favorite_listing_notifications ? 1 : 0}}"){ :'ng-init' => "profile.favorite_listing_notifications = #{ @profile.favorite_listing_notifications }" }
+					%input#favoriteListingNotifications.switch-input(type="checkbox" ng-model="profile.favorite_listing_notifications")
+					%label.switch-paddle(for="favoriteListingNotifications")
+						%span.show-for-sr Would you like to receive favorite listing activity updates?
+						%span.switch-active(aria-hidden="true") Yes
+						%span.switch-inactive(aria-hidden="true") No
+
+		.field.well.saved-search-notifications.cell.small-12.grid-x
+			.small-12.medium-auto
+				%label New save search results?
+				Get updates when new listings are added for your saved search queries.
+			.small-12.medium-shrink
+				.switch.large.radius.m-top-10
+					%input(type="hidden" name="profile[saved_search_notifications]" value="{{ profile.saved_search_notifications ? 1 : 0}}"){ :'ng-init' => "profile.saved_search_notifications = #{ @profile.saved_search_notifications }" }
+					%input#savedSearchNotifications.switch-input(type="checkbox" ng-model="profile.saved_search_notifications")
+					%label.switch-paddle(for="savedSearchNotifications")
+						%span.show-for-sr Would you like to receive notifications when new listings are added for your saved search queries?
+						%span.switch-active(aria-hidden="true") Yes
+						%span.switch-inactive(aria-hidden="true") No
+
+		.field.update-password.cell.small-12.grid-x(ng-init="profile.updatePassword = false")
+			.small-12.medium-auto.m-top-20
+				%h2.title.m-0 Would you like to update your password?
+			.small-12.medium-shrink.m-top-20
+				.switch.large.radius
+					%input#updatePasword.switch-input(type="checkbox" name="profile[update_password]" ng-model="profile.updatePassword")
+					%label.switch-paddle(for="updatePasword")
+						%span.show-for-sr Would you like to receive notifications when new listings are added for your saved search queries?
+						%span.switch-active(aria-hidden="true") Yes
+						%span.switch-inactive(aria-hidden="true") No
+
+		.field.well.password.cell.small-12.medium-6.m-top-20(ng-if="profile.updatePassword" ng-class="{error: (profileForm[\"profile[password]\"].$touched || validate) && profileForm[\"profile[password]\"].$invalid }")
+			%label New Password
+			%input(placeholder="New password (8 characters+)" type="password" name="profile[password]" ng-minlength="8" ng-model="profile.password" ng-required="profile.updatePassword"){value: @profile.password}
+
+		.field.well.confirm-password.cell.small-12.medium-6(ng-if="profile.updatePassword" ng-class="{error: (profileForm[\"profile[password_confirmation]\"].$touched || validate) && profileForm[\"profile[password_confirmation]\"].$invalid }")
+			%label Confirm New Password
+			%input(placeholder="Confirm your new password" compare-to="profile.password" type="password" ng-minlength="8" name="profile[password_confirmation]" ng-model="profile.password_confirmation" ng-required="profile.updatePassword"){value: @profile.password_confirmation}
+
+		.field.well.password.cell.small-12(ng-class="{error: (profileForm[\"profile[current_password]\"].$touched || validate) && profileForm[\"profile[current_password]\"].$invalid }")
+			%label
+				Current Password
+				%a.float-right.show-for-medium{href:destroy_user_session_path}
+					%small Forgot your password?
+
+			%input(placeholder="Your current password" type="password" name="profile[current_password]" ng-model="profile.current_password" ng-required="profile.updatePassword"){value: @profile.password}
+			%a.float-right.hide-for-medium{href:destroy_user_session_path}
+				%small Forgot your password?
+		.field.cell.small-12
+			%button.magic-button.secondary.large(type="submit" ng-click="validate = true"){ :"ng-disabled" => "!(profileForm.$valid)" } Save Changes
+
+= render :file => 'account/account'

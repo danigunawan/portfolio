@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  crawler_id: 
+  category_id: 
+  type: 
+  output: MyString
+  input: MyString
+
+two:
+  crawler_id: 
+  category_id: 
+  type: 
+  output: MyString
+  input: MyString

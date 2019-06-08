@@ -1,0 +1,219 @@
+- @listing ||= Listing.new
+= form_for @listing, url: @listing.id ? account_listing_path(@listing) : account_listings_path, method: @listing.id ? :patch : :post, html: { class: 'multipartForm', :'ng-controller' => "market.account.listings.ListingFormController", name: "listingForm", id: 'listingForm' } do
+	%section#steps.step-indicator.show-for-medium.section-white
+		.grid-container
+			.grid-x.grid-padding-x
+				.medium-4.cell
+					.step-indicator-item(ng-class="{ active: step == 1}" ng-click="nextStep($event, 1)" ng-init="step=1")
+						%h3 Step 1
+						%p Photos
+				.medium-4.cell
+					.step-indicator-item(ng-class="{ active: step == 2}" ng-click="nextStep($event, 2)")
+						%h3 Step 2
+						%p Details
+				.medium-4.cell
+					.step-indicator-item(ng-class="{ active: step == 3}" ng-click="nextStep($event, 3)")
+						%h3 Step 3
+						%p Post
+	%section.section.submit-section(ng-init="listing = {}")
+		.grid-container.step-1.ng-cloak
+			.grid-x.grid-padding-x
+				.large-10.large-offset-1.cell{ :'ng-init' => "listing.photos = #{ @listing.listing_photos.map(&:photo).map { |i| { id: i.id, url: i.url } }.to_json }".html_safe }
+					%h5.text-blue.hide
+						%strong STEP 1
+					%h2.h2.mb0.hide
+						Hi, #{ current_user ? current_user.first_name.strip + ',' : '' } let's start by uploading some
+
+						%span.text-green2.hide photos
+					.lead.text-gray.hide We highly recommend adding at least one photo.
+					%h3.h3.hide
+						%i.flaticon-photo-camera
+						Photos
+						%span.text-muted.hide (recommended)
+					.upload-container(ng-class="{invalid: false && !listing.photos.length && validate }")
+						.grid-x.grid-margin-x
+							.cell.small-12.photo-uploader-container
+								%ul.sortable.photo-upload-manager(ng-init="initSortable()")
+									%li.ui-state-default.photo.z.ng-cloak.handle(ng-repeat="photo in listing.photos" ng-class="{ uploading: (!photo.file && !photo.url) }")
+										%input(type="hidden" name="listing[photo_ids][]" value="{{ photo.id }}")
+										%md-progress-circular(md-mode="determinate" value="{{photo.progressPercentage}}" ng-if="photo.file")
+										.photo-thumbnail
+											%img(ngf-thumbnail="photo.file || photo.url || '/thumb.jpg'")
+										.photo-controls
+											%i.ss-icon.ss-move.handle
+											%i.ss-icon.ss-trash.z(ng-click="deletePhoto(photo)")
+							.cell.small-12.button.large.photo-uploader-dropzone.m-top-20(ngf-drop="uploadFiles($files)" ngf-select="uploadFiles($files)" ngf-resize-if="$width > 2000 || $height > 1500" ngf-resize="{width: 1500, height: 1500, quality: .9, type: 'image/jpeg', restoreExif: true}" multiple="multiple")
+								%strong Upload Photos
+		.grid-container.step-2
+			.grid-x.grid-padding-x
+				.large-10.large-offset-1.cell
+					%h5.text-blue.hide
+						%strong Sign up or Log in
+					%h2.h2.mb0.hide
+						Now, lets get some more
+						%span.text-green2 listing details
+					.lead.text-gray.hide Enter your item details below.
+					%h3.h3.hide
+						%i.flaticon-info
+						Details
+						%span.text-muted.hide (required)
+					.grid-x.grid-margin-x.align-stretch.m-top-20
+						.medium-12.cell.acard.acard-round(ng-class="{invalid: (listingForm[\"listing[description]\"].$touched || validate) && listingForm[\"listing[description]\"].$invalid }")
+							%label.aslabel
+								%textarea.input-nobb.radius(ng-model="$parent.listing.description" name="listing[description]" placeholder="Enter a short description of what's for sale" required rows="4" ng-minlength="0" ng-maxlength="2000"){ :'ng-init' => "$parent.listing.description = '#{ @listing.description ? escape_javascript(@listing.description) : nil }'" }
+								%small.countdown.hide(ng-show="listingForm[\"listing[description]\"].$dirty && listingForm[\"listing[description]\"].$valid")
+									%span#count(ng-bind="2000 - $parent.listing.description.length") 2000
+									Characters Remaining
+						%category-attributes.cell.medium-12(name="'listing[category_attributes]'" validate="validate" listing="listing" form="listingForm" category="childCategory || parentCategory"){ :"ng-init" => @listing.category_attribute_values ? "listing.category_attributes = { #{ @listing.category_attribute_values.map { |i| i.category_attribute_id.to_json + ':' + (i.category_attribute.restricted ? (i.category_attribute.boolean ? i.float_value : i.id) : i.value).to_json }.join(', ') } }" : nil }
+						.medium-6.cell.acard-round(ng-class="{invalid: (listingForm[\"category\"].$touched || validate) && !listing.category && !listing.category.id }")
+							%label.aslabel
+								%input(type='hidden' name="listing[category_id]" required="required" value="{{ listing.category && !listing.category.categories.length ? listing.category.id : null }}"){ :"ng-init" => @listing.category_id ? "listing.category = {id: #{ @listing.category_id }}" : nil }
+								%select.input-nobb.radius.ng-cloak(ng-model="parentCategory" ng-change="listing.category = parentCategory" placeholder="Select Category" ng-options="categoryOption as categoryOption.name for categoryOption in SessionService.TopLevelCategories track by categoryOption.id"){:'ng-init' => @listing.category ? "parentCategory = {id:#{@listing.category && @listing.category.category ? @listing.category.category.id : @listing.category.id }}" : nil }
+									%option(value="") Select Category
+								%select.input-nobb.radius(ng-if="parentCategory && parentCategory.categories && parentCategory.categories.length" ng-change="listing.category = childCategory" ng-model="childCategory" placeholder="Select Category" ng-options="categoryOption as categoryOption.name for categoryOption in parentCategory.categories track by categoryOption.id")
+									%option(value=""){:'ng-init' => @listing.category && @listing.category.category ? "childCategory = {id:#{@listing.category.id}}" : nil } Select Category
+						.large-6.medium-6.cell
+							.grid-x.grid-margin-x
+								.cell.small-12.medium-auto.acard.acard-round(ng-class="{invalid: (listingForm[\"listing[price]\"].$touched || validate) && listingForm[\"listing[price]\"].$invalid }")
+									%label.aslabel
+										.cell.auto
+											%span.currency-prepend $
+											%input.left.input-nobb.radius(type="text" autocomplete="off" name="listing[price]" placeholder="How much are you asking?" money){:"ng-init" => (!@listing.price_plain.blank? ? "listing.price = '#{ @listing.price_plain.gsub('$','').downcase.gsub('call','') }'" : nil), :required => true, :'ng-model' => "listing.price", value: @listing.price_plain.gsub('$','').downcase.gsub('call','') }/
+								.cell.small-12.medium-shrink.acard.acard-round.ng-cloak(ng-show="SessionService.categoryById(listing.category.id) && SessionService.categoryById(listing.category.id).price_unit_attribute" ng-class="{invalid: (listingForm[\"listing[price_unit_id]\"].$touched || validate) && listingForm[\"listing[price_unit_id]\"].$invalid }")
+									%label.aslabel.mb0.category-attribute-input
+										%br.hide-for-medium
+										%select.input-nobb.radius(placeholder="{{ SessionService.categoryById(listing.category.id).price_unit_attribute.config.placeholder || SessionService.categoryById(listing.category.id).price_unit_attribute.name }}" ng-required="SessionService.categoryById(listing.category.id).price_unit_attribute" name="listing[price_unit_id]" ng-model="listing.price_unit_id" ng-options="categoryOption as categoryOption.value for categoryOption in SessionService.categoryById(listing.category.id).price_unit_attribute.category_attribute_values track by categoryOption.id"){:"ng-init" => @listing.price_unit_id ? "listing.price_unit_id = {id:#{ @listing.price_unit_id }}" : nil }
+											%option(value="") {{ listing.category.price_unit_attribute.config.placeholder || listing.category.price_unit_attribute.name }}
+					%h3.h3.hide
+						%i.flaticon-phone
+						Contact info
+						%span.text-muted.hide (required)
+					.grid-x.grid-padding-x.hide
+						.medium-12.cell
+							.grid-x.grid-padding-x
+								.medium-6.cell
+									.acard.acard-round(ng-class="{invalid: (listingForm[\"listing[contact_name]\"].$touched || validate) && listingForm[\"listing[contact_name]\"].$invalid }")
+										%label.aslabel.mb0
+											Preferred Contact Name
+											%input.input-nobb.radius(type="text" autocomplete="off" name="listing[contact_name]" placeholder="Your Company or Personal Name"){:"ng-init" => "listing.contact_name = '#{ @listing.contact_name ? @listing.contact_name : current_user ? current_user.full_name : nil }'", :required => true, :'ng-model' => "listing.contact_name", value: (@listing.contact_name ? @listing.contact_name : "#{current_user ? current_user.first_name : nil} #{current_user ? current_user.last_name : nil}") }
+								.medium-6.cell
+									.acard.acard-round(ng-class="{invalid: (listingForm[\"listing[contact_phone]\"].$touched || validate) && listingForm[\"listing[contact_phone]\"].$invalid }")
+										%label.aslabel.mb0
+											Contact Phone Number
+											%input.input-nobb.radius(type="text" autocomplete="off" name="listing[contact_phone]" placeholder="Enter your contact phone number."){:"ng-init" => "listing.contact_phone = '#{ @listing.contact_phone ? @listing.contact_phone : current_user ? current_user.contact_phone : nil }'", :required => true, :'ng-model' => "listing.contact_phone", value: (@listing.contact_phone ? @listing.contact_phone : current_user ? current_user.contact_phone : nil) }
+					%h3.h3.hide
+						%i.flaticon-pin
+						Location
+						%span.text-muted.right.hide (required)
+					.acard.acard-round(ng-class="{invalid: (listingForm[\"listing[address]\"].$touched || validate) && listingForm[\"listing[address]\"].$invalid }")
+						%label.aslabel.mb0
+							%input#input-product-location.input-nobb.radius(ng-change="geocodeAddress()" type="text" autocomplete="off" g-places-autocomplete data-provide="typeahead" name="listing[address]" ng-model="listing.address" ng-minlength=3 placeholder="Address, City, town, or township" required=true){ ng: { init: "listing.address = {formatted_address: '#{ @listing.address ? @listing.address : nil }'}" }, value: @listing.address ? @listing.address : nil}
+					.product-location.hide{:'ng-init' => location && location.latitude ? "loadMap({lat: #{location.latitude}, lng: #{location.longitude}})" : ""}
+						#product-location
+		- if false && current_user
+			.grid-container.step-3.ng-cloak
+				.grid-x.grid-padding-x
+					.large-10.large-offset-1.cell
+						%h5.text-blue.hide
+							%strong STEP 3
+						%h2.h2.mb0.hide
+							Want your listing to be more
+							%span.text-green2 visible
+							than others?
+						.lead.text-gray Boost your listing to get even more views!
+						%h3.h3
+							%i.flaticon-upload
+							Boost your listing
+							%span.text-muted (optional)
+						.grid-x.grid-padding-x
+							.medium-6.cell
+								.acard.acard-round
+									%label.aslabel.mb0
+										Choose boost term
+										%select.input-nobb.radius(name="listing[boost_interval_id]" ng-model="listing.boost_interval" ng-options="boost_interval as boost_interval.label for boost_interval in boost_interval_options track by boost_interval.id"){:"ng-init" => "listing.boost_interval = { id: #{ @listing.boost_interval ? @listing.boost_interval.id : current_site.boost_intervals.find_or_create_by(term:0, site_id:current_site.id).id } };boost_interval_options = #{ current_site.boost_intervals.where(active:true).order(:term).map{|i| { label: i.label, id: i.id, term: i.term, discount: i.discount } }.to_json }".html_safe}
+							.medium-6.cell
+								.acard.acard-round
+									%label.aslabel.mb0
+										Choose boost level
+										%select.input-nobb.radius(name="listing[boost_level_id]" ng-model="listing.boost_level" ng-options="boost_level as boost_level.priced_label for boost_level in boost_level_options track by boost_level.id"){:"ng-init" => "listing.boost_level = { id: #{ @listing.boost_level ? @listing.boost_level.id : current_site.boost_levels.find_or_create_by(level:0,site_id:current_site.id).id } };boost_level_options = #{ current_site.boost_levels.where(active:true).order(:level).map{|i| { label: i.label, priced_label: i.priced_label, id: i.id, level: i.level, price: i.price } }.to_json }".html_safe}
+						.well.text-center
+							%p.mb0 The higher level you request - the higher your listing will appear in search results.
+							%p.text-muted.mb0 Ex.: Your listing with a high level boost will appear above a listing with medium level.
+						.submit-price(ng-show="listing.boost_level.price && listing.boost_interval.term")
+							.text-muted {{ listing.boost_level.label }} level boost for {{ listing.boost_interval.label }}
+							%span.ng-cloak TOTAL:
+							%span.ng-cloak(ng-class="listing.boost_level.price && listing.boost_interval.discount > 0 ? 'strike' : 'text-green'") {{ listing.boost_interval.term*listing.boost_level.price/100 | currency : "$" }}
+							%span.text-green.ng-cloak(ng-show="listing.boost_level.price && listing.boost_interval.discount > 0") {{ listing.boost_interval.term*listing.boost_level.price*(1 - listing.boost_interval.discount)/100 | currency : "$" }}
+							.text-muted.m-top-10
+								%strong Renews Automatically
+
+		- if current_user
+			.grid-container.step-3.ng-cloak
+				.grid-x.grid-padding-x
+					.large-10.large-offset-1.cell
+						.submit-action.text-center
+							%md-progress-linear.left(md-mode="indeterminate" ng-show="submittingForm || photosUploading != 0")
+							%button.button.medium(type="submit" ng-click="submit($event)" ng-disabled="submittingForm || photosUploading != 0")
+								Submit listing
+								%span(ng-show="listing.boost_level.price && listing.boost_interval.term") &amp; Pay
+								%i.flaticon-long-arrow-right
+							.next-stepinfo.hide
+								%a{"data-toggle" => "pay", :href => "#"} Skip this step &amp; submit listing
+
+		- if !current_user
+			.grid-container.step-3.ng-cloak.m-top-50
+				.grid-x.grid-padding-x
+					.large-10.large-offset-1.cell
+						%h2.h2.mb0
+							That's it! Now let's get you set up with an
+							%span.text-green2 account
+						.lead.text-gray.hide You can also sign in to an existing account.
+						.field.cell.small-12.grid-x.m-top-20(ng-init="profile.updatePassword = false")
+							%h3.h3.m0.small-12.medium-auto.show-for-medium
+								%i.flaticon-avatar
+								Do you already have an account on #{current_site.name}?
+							.small-12.medium-shrink.m-top-20.h3
+								.switch.radius.float-right.m5
+									%input#isLogin.switch-input(type="checkbox" name="user[isLogin]" ng-model="user.isLogin")
+									%label.switch-paddle(for="isLogin")
+										%span.show-for-sr Would you like to receive notifications when new listings are added for your saved search queries?
+										%span.switch-active(aria-hidden="true") Yes
+										%span.switch-inactive(aria-hidden="true") No
+								%strong.float-left.m5.hide-for-medium Already have an account?
+						.m-top-20
+						.grid-x.grid-margin-x.ng-cloak(ng-hide="user.isLogin")
+							.medium-6.cell
+								.cell(ng-class="{invalid: (listingForm[\"user[first_name]\"].$touched || validate) && listingForm[\"user[first_name]\"].$invalid }")
+									%label.aslabel
+										%input.radius(name="user[first_name]" placeholder="First Name" type="text" ng-model="user.first_name" ng-required="!user.isLogin")
+							.medium-6.cell
+								.cell(ng-class="{invalid: (listingForm[\"user[last_name]\"].$touched || validate) && listingForm[\"user[last_name]\"].$invalid }")
+									%label.aslabel
+										%input.radius(name="user[last_name]" placeholder="Last Name" type="text" ng-model="user.last_name" ng-required="!user.isLogin")
+						.cell(ng-class="{invalid: (listingForm[\"user[email]\"].$touched || validate) && listingForm[\"user[email]\"].$invalid }")
+							%label.aslabel
+								%input.radius(name="user[email]" placeholder="Your Email" type="email" ng-model="user.email" ng-blur="user.validateEmail()" required)
+						.cell(ng-class="{invalid: (listingForm[\"user[password]\"].$touched || validate) && listingForm[\"user[password]\"].$invalid }")
+							%label.aslabel
+								%a.float-right.show-for-medium.ng-cloak(ng-show="user.isLogin" target="_blank"){href:new_user_password_path}
+									%small Forgot your password?
+								%input.radius(name="user[password]" placeholder="Your Password" type="password" ng-model="user.password" autocomplete="off" required)
+						.cell.ng-cloak(ng-if="!user.isLogin" ng-class="{invalid: (listingForm[\"user[password_confirmation]\"].$touched || validate) && listingForm[\"user[password_confirmation]\"].$invalid }")
+							%label.aslabel
+								%input.radius(name="user[password_confirmation]" placeholder="Confirm Your Password" ng-minlength="8" compare-to="user.password" type="password" ng-model="user.password_confirmation" ng-required="!user.isLogin" autocomplete="off")
+						.medium-12.cell(ng-show="errors")
+							.callout.radius.warning(ng-class="error.key" ng-bind="error.message" ng-repeat="error in errors track by error.key")
+						.grid-x.grid-padding-x
+							.cell.small-12.medium-auto.m-top-20
+								%button.float-left.button.medium.success.expanded(ng-clicks="nextStep($event, 3)" ng-click="user.authenticate($event)" type="button" ng-class="processing ? 'ellipsis' : ''")
+									%i.flaticon-avatar
+									%strong
+										%span(ng-show="!user.isLogin") {{ !processing ? 'Sign Up & Submit' : 'Setting up your new account' }}
+										%span(ng-show="user.isLogin") {{ !processing ? 'Log In & Submit' : 'Signing into your account' }}
+							- if false
+								.cell.small-12.medium-shrink
+									.or.float-left.m-top-30 OR
+								.cell.small-12.medium-auto.m-top-20
+									%a.button.float-left.btn-facebook.medium.expanded{:href => "#"}
+										%i.flaticon-facebook-logo
+										%strong Connect Facebook & Submit

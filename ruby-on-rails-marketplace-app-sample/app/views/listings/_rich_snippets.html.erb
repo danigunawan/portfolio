@@ -1,0 +1,33 @@
+<% listing = local_assigns[:listing] %>
+<% if listing %>
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "Article",
+      "headline": "<%= listing.title_long %>",
+      "author": "<%= listing.contact_name %>",
+      "publisher": {
+          "@type": "Organization",
+          "@id": "https://<%= current_site.host%>",
+          "logo": {
+            "@type": "ImageObject",
+            "width": "400",
+            "height": "140",
+            "url": "<%= asset_url('logo.png')%>"
+          },
+          "name": "<%= listing.site ? listing.site.name : current_site.name %>"
+      },
+      "datePublished": "<%= listing.created_at.to_formatted_s(:iso8601) %>",
+      "dateModified": "<%= listing.updated_at.to_formatted_s(:iso8601) %>",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://<%= current_site.host%>"
+      },
+      "image": [
+        <% if listing.listing_photos.map(&:photo).first %>
+          "<%= listing.listing_photos.map(&:photo).first.url %>"
+        <% end %>
+      ]
+    }
+  </script>
+<% end %>

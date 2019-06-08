@@ -1,0 +1,53 @@
+== README
+
+Ivan Noel - Market 3.0.0
+
+Note:
+Requires an init to the database to function correctly.
+
+Dependencies:
+
+1. Redis Server
+
+2. Postgres Database market_development *or* market_production
+
+3. Solr Server via Sunspot *or* Native deployment
+
+Requires the following config on a new instance:
+
+1. Site will auto load from its first http request
+site = Site.where(host:'www.hostname.com').first
+
+2. Set basic site info
+site.name = "Site Name"
+site.established_at = 4.years.ago
+
+3. Set Api Keys and other environment configurations.
+site.env["KEY"] = VALUE
+
+site.env["STRIPE_PUBLISHABLE_KEY"] = "pk_test_****"
+site.env["STRIPE_SECRET_KEY"] = "sk_test_****"
+site.env["MAILGUN_DOMAIN"] = "mail.hostname.com"
+site.env["MAILGUN_PORT"] = 587
+site.env["MAILGUN_USERNAME"] = "postmaster@mail.hostname.com"
+site.env["MAILGUN_API_KEY"] = "key-****"
+
+Set boost levels for any featured listings.
+site.boost_levels.find_or_create_by({"level":0, "label":"No Boosting", "price":0.0})
+site.boost_levels.find_or_create_by({"level":1, "label":"Low", "price":99.0})
+site.boost_levels.find_or_create_by({"level":2, "label":"Medium", "price":199.0})
+site.boost_levels.find_or_create_by({"level":3, "label":"High", "price":299.0})
+
+Set boost intervals for featured listings.
+site.boost_intervals.find_or_create_by({"term":0,"label":"No Boosting","discount":0.0})
+site.boost_intervals.find_or_create_by({"term":1,"label":"1 Month","discount":0.0})
+site.boost_intervals.find_or_create_by({"term":2,"label":"2 months (Save 20%)","discount":0.2})
+site.boost_intervals.find_or_create_by({"term":6,"label":"6 months (Save 50%)","discount":0.5})
+
+Set categories for listing (Required)
+site.categories.find_or_create_by({name: "Hay", published: true, promoted: true})
+
+4. Publish site
+site.active = true
+
+site.save

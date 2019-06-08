@@ -1,0 +1,37 @@
+Hi #{ @listing_message.listing.contact_name }!
+
+%p
+	We've received a message for your listing on #{ @listing_message.listing.site.name }. Below is the information entered by the interested party.
+
+%p
+	%strong Listing:
+	#{ @listing_message.listing.url }
+
+%p
+	%strong Message:
+
+	%br
+	%br
+	= @listing_message.body
+
+%p
+	%strong Contact:
+
+	%br
+	%br
+	= @listing_message.name
+	%br
+	= @listing_message.phone
+	%br
+	= @listing_message.from_email
+
+	%br
+\-----------------------------------------------------------
+%br
+
+- if @listing_message.latitude
+	%p
+		#{ @listing_message.name } is about #{ @listing_message.listing.distance_from([@listing_message.latitude, @listing_message.longitude]).ceil } miles away from your listing (according to their ip address).
+
+%em
+	Please contact support@#{ @listing_message.listing.site.host.gsub('www.','') } if you believe this message is from a scammer or is suspecious in nature.

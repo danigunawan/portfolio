@@ -1,0 +1,63 @@
+= content_for :account_header_content do
+	%strong Below are your saved searches.
+	%span To view search results simply click the search you'd like to view.
+
+= content_for :account_content do
+	.listings.grid-x.grid-margin-x.align-top
+		%h2.title.cell.small-12.medium-auto
+			Saved Searches
+			%span.text-muted (#{ @saved_searches.count })
+		.controls.cell.small-12.medium-shrink.grid-x
+			.control.cell.medium-shrink
+				%a.button.hollow.small.cell{:href=>search_path}
+					%span.ss-icon.ss-search
+					Explore More
+		- if @saved_searches
+			.saved-searches.cell.small-12.grid-x
+				- @saved_searches.each do |saved_search|
+					.cell.small-12
+						.card
+							.card-content.grid-x.grid-padding
+								.card-section.cell.auto
+									%span.text-label Keywords
+									%p
+										= saved_search.search.keywords.blank? ?  'Everything' : saved_search.search.keywords
+								.card-section.cell.shrink
+									%span.text-label Category
+									%p
+										- if saved_search.search.category
+											= saved_search.search.category.name
+										- else
+											All Categories
+								.card-section.cell.shrink
+									%span.text-label Location
+									%p
+										= saved_search.search.location.blank? ? 'Everywhere' : saved_search.search.location
+								.card-section.cell.shrink
+									%span.text-label Distance
+									%p
+										= saved_search.search.distance.blank? ? 200 : saved_search.search.distance.to_i
+										mile range
+							.card-controls
+								%a.control.text-blue{href: saved_search.state_path }
+									%i.ss-icon search
+									search with these criteria
+								- if can? :manage, saved_search
+									%a.control.delete.right(data-method="DELETE" data-confirm="Are you sure you want to delete this saved search?"){href: account_saved_search_path(saved_search)}
+										%i.ss-icon trash
+										remove from list
+			= will_paginate @saved_searches, class: "custom_pagination cell text-center", previous_label: '', next_label: ''
+			.cell.small-12.m-top-20.card.card-round.card-saved
+				.grid-x.grid-padding-x.m-top-20
+					.medium-6.cell.posr
+						%h3.h3.text-medium Save Your Searches!
+						%p At #{current_site.name}, you can save your favorite searches in just one click. You'll find your saved searches on your profile page or at a dropdown near the search button.
+					.medium-6.cell
+						%img{:src => asset_path("save-search.gif")}/
+						.m-top-20
+		-else
+			.no-listings
+				%span.header-title Sell on the largest livestock network around.
+				%a.secondary-color-button{:href=> new_account_listing_path } Post An Ad
+				%span.disclaimer SUBJECT TO TERMS AND CONDITIONS
+= render :file => 'account/account'

@@ -1,0 +1,87 @@
+= content_for :content do
+	.grid-x
+		= render "layouts/header"
+		.account.grid-x.grid-container.align-top
+			.heading.cell.small-12.grid-x.show-for-medium
+				%i.cell.icon.settings.show-for-medium
+				.cell.auto
+					.headline Hello, #{ current_user.full_name }
+					.subtitle
+						= yield :account_header_content
+			- if false && current_site.plans
+				.billing-bar.well.cell.small-12.grid-x.show-for-medium
+					- if false && current_user.plan
+						.cell.radius.plan.radius.text-center.small-12.padding-20.blue-hero.white.z
+							%h3
+								%strong
+									= current_user.plan.name
+								%br
+								%small.white
+									= current_user.plan.amount == 0 ? 'Free' : number_to_currency(current_user.plan.amount/100.0)
+									per mo
+							%h4
+								%strong
+									= current_user.plan.metadata["searching"] || '∞'
+									Searching
+							%h4
+								%strong
+									= current_user.plan.metadata["listings"] || '∞'
+									= "Listing".pluralize(current_user.plan.metadata["searching"].to_i || 2)
+					.plan.cell.medium-auto
+						Active plan:
+						%span.name.highlight #{ current_user.plan.name }
+						%span.price (#{ current_user.plan.amount == 0 ? 'Free' : number_to_currency(current_user.plan.amount/100.0)}/mo)
+						.info
+							You can create #{ pluralize(current_user.allowed_listings  || 0,"more listing") }.
+							%a.secondary(ng-click="SessionService.openModal('subscription.html')") Upgrade
+							if you need more.
+					.controls.cell.medium-shrink.grid-x
+						.cell.small-12.medium-shrink.m-top-10
+							- if current_user.subscription
+								%span.timer{class: current_user.subscription.cancel_at_period_end ? 'text-red' : 'text-muted'}
+									- if !current_user.subscription.cancel_at_period_end
+										- if current_user.subscription.trial_end && Time.at(current_user.subscription.trial_end) > Time.now
+											Trial Ends
+										- else
+											Renews
+									- else
+										Cancels
+									in
+									- if current_user.subscription.trial_end && Time.at(current_user.subscription.trial_end) > Time.now
+										= time_ago_in_words(Time.at(current_user.subscription.trial_end))
+									- elsif current_user.subscription
+										= time_ago_in_words(Time.at(current_user.subscription.current_period_end))
+						.cell.small-12.medium-shrink
+							.m-top-10.hide-for-medium
+							%a.magic-button.cell(ng-click="SessionService.openModal('subscription.html')") Manage Plan
+			.navigation.cell.show-for-large.m-top-50
+				%a.link{href:edit_account_profile_path, :class => (request.fullpath.starts_with? edit_account_profile_path) ? "current" : nil }
+					%i.icon.avatar
+					Profile
+				%a.link{href:edit_account_directory_path, :class => (request.fullpath.starts_with? edit_account_directory_path) ? "current" : nil }
+					%i.icon.location
+					Directory
+				%a.link{href:account_listings_path, :class => (request.fullpath.starts_with? account_listings_path) ? "current" : nil }
+					%i.icon.apps
+					My Listings
+				%a.link{href:account_favorites_path, :class => (request.fullpath.starts_with? account_favorites_path) ? "current" : nil }
+					%i.icon.heart
+					Saved Listings
+				%a.link{href:account_saved_searches_path, :class => (request.fullpath.starts_with? account_saved_searches_path) ? "current" : nil }
+					%i.icon.floppy-disk
+					Saved Searches
+				- if false
+					%a.link(ng-click="SessionService.openModal('subscription.html')")
+						%i.icon.credit-card
+						Billing
+				- if current_user.blogger or current_user.is_admin?
+					%a.link{href:account_posts_path, :class => (request.fullpath.starts_with? account_posts_path) ? "current" : nil }
+						%i.icon.apps
+						Posts
+			.content.cell.large-auto.grid-x.large-offset-1.m-top-50
+				= yield :account_content
+				.m-top-50
+	= render "layouts/footer_hero"
+	= render "layouts/footer"
+
+= render :file => 'layouts/application'

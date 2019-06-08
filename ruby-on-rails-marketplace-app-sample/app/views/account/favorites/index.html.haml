@@ -1,0 +1,63 @@
+= content_for :account_header_content do
+	%strong Below are your saved listings.
+	%span To view a listing simply click the listing you'd like to view.
+
+= content_for :account_content do
+	.listings.grid-x.grid-margin-x.align-top
+		%h2.title.cell.auto
+			Saved Listings
+			%span.text-muted (#{ @favorites.count })
+		.controls.cell.small-12.medium-shrink.grid-x
+			.control.cell.medium-shrink
+				%a.button.hollow.small.cell{:href=>search_path}
+					%span.ss-icon.ss-search
+					Explore More
+		- if @favorites
+			.listings.cell.small-12.grid-x
+				- @favorites.each do |favorite|
+					- if favorite.listing
+						.cell.small-12
+							.card
+								.card-content.grid-x
+									.card-image.cell.shrink.show-for-medium
+										%img{src: favorite.listing.photos.at(0) ? favorite.listing.photos.at(0).url : asset_url(favorite.listing.placeholder_photo_path) }
+										%span.tag-category #{ favorite.listing.category ? favorite.listing.category.name : 'For Sale' }
+									.card-section.cell.auto
+										%h4
+											%a{:href=>listing_path(favorite.listing), title: favorite.listing.title, target: true ? "_blank" : nil  }
+												= favorite.listing.title_dynamic
+										%p
+											%i.icon.location
+											= favorite.listing.safe_address
+											- if location && location.latitude && favorite.listing.distance_from([location.latitude,location.longitude])
+												%span.text-muted
+													(About #{favorite.listing.distance_from([location.latitude,location.longitude]).ceil} miles away)
+										%p
+											%span.text-blue
+												= humanized_money_with_symbol favorite.listing.price
+											- if favorite.listing.price_unit
+												= favorite.listing.price_unit
+								.card-controls.grid-x
+									- if can? :manage, favorite
+										.cell.auto
+										%a.control.delete.cell.shrink(data-method="DELETE" data-confirm="Are you sure you want to unfollow this listing?"){href: account_favorite_path(favorite)}
+											%i.ss-icon trash
+											delete from saved list
+										.cell.auto
+				= will_paginate @favorites, class: "custom_pagination cell text-center", previous_label: '', next_label: ''
+				.cell.small-12.m-top-20.card.card-round.card-saved
+					.grid-x.grid-padding-x.m-top-20
+						.medium-6.cell.posr
+							%h3.h3.text-medium Save Listings You Like!
+							%p Press a ‘heart’ icon located near the listing’s price display and save it for later incase you need it. You can find all saved listings on your profile page.
+						.medium-6.cell
+							%img{:src => asset_path("save-listing.gif")}/
+							.m-top-20
+
+		-else
+			.no-listings
+				%span.header-title Sell on the largest livestock network around.
+				%a.secondary-color-button{:href=> new_account_listing_path } Post An Ad
+				%span.disclaimer SUBJECT TO TERMS AND CONDITIONS
+
+= render :file => 'account/account'

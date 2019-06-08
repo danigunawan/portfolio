@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user_id: 
+  site_id: 
+  flaggable: 
+  flagged_at: 2015-12-01 11:18:30
+
+two:
+  user_id: 
+  site_id: 
+  flaggable: 
+  flagged_at: 2015-12-01 11:18:30

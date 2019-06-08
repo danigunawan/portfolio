@@ -1,0 +1,79 @@
+.grid-container.full.signup-wrapper
+	.grid-x.full
+		.cell.signup-left
+			.signup-left-inner
+				%a.logo.signup-logo{:href => root_path}
+					#{current_site.name}
+				%h1.h2.mb0 Create Your Free Account
+				.lead.text-muted Creating an account on #{ current_site.name } is absolutely free!
+				.text-muted
+					Already have an account?
+					%a{href: new_user_session_path} Login here.
+				= form_for(resource, as: resource_name, url: registration_path(resource_name), html: {class: "form-signup", data: { "abide": ""}, novalidate: ""}) do |f|
+					= devise_error_messages!
+					.grid-x.grid-margin-x
+						.medium-6.cell
+							.card.card-round
+								%label.aslabel.mb0
+									Your name
+									= f.text_field :first_name, { autofocus: true, placeholder: "First Name", required: true, class: "input-nob" }
+						.medium-6.cell
+							.card.card-round
+								%label.aslabel.mb0
+									Your surname
+									= f.text_field :last_name, { placeholder: "Last Name", required: true, class: "input-nob" }
+						.medium-12.cell
+							.card.card-round
+								%label.aslabel.mb0
+									Enter email address
+									= f.email_field :email, { placeholder: "Your email", required: true, class: "input-nob" }
+						.medium-6.cell
+							.card.card-round
+								%label.aslabel.mb0
+									Enter password
+									= f.password_field :password, { id: "password", autocomplete: "off", class: "input-nob", placeholder: "Your password", pattern: "alpha_numeric", required: true }
+						.medium-6.cell
+							.card.card-round
+								%label.aslabel.mb0
+									Re-Enter password
+									= f.password_field :password_confirmation, { data: { equalto: "password" }, autocomplete: "off", class: "input-nob", placeholder: "Your password", pattern: "alpha_numeric", required: true }
+						.medium-12.cell
+							%button.button.success.medium{:type => "submit"}
+								Create Your Account
+								%i.flaticon-long-arrow-right
+					- if false
+						.or OR
+						%a.button.btn-facebook.large.expanded{:href => "#"}
+							%i.flaticon-facebook-logo
+							%strong Sign Up through Facebook
+		.cell.signup-right
+			.signup-right-inner
+				.media-object
+					.media-object-section
+						%i.flaticon-add-circular2
+					.media-object-section
+						%h4
+							List your listing
+							%small for sellers
+						%p Only registered users are able to post their listings to #{ current_site.name }. Give your listing the audience it needs!
+				.media-object
+					.media-object-section
+						%i.flaticon-search
+					.media-object-section
+						%h4
+							Save Your Searches
+							%small for buyers
+						%p You'll be able to save your searches and get back to them in a couple clicks. Spend less time and do more!
+				.media-object
+					.media-object-section
+						%i.flaticon-like
+					.media-object-section
+						%h4
+							Save Listings You Like
+							%small for buyers
+						%p Found a listing that fits your needs? Save it and find it fast in your profile whenever you need it!
+
+= render 'layouts/footer'
+
+
+= render template: "layouts/application_fullscreen"

@@ -1,0 +1,175 @@
+%script(type="text/ng-template" id="subscription.html")
+	%button.close-button.button.hollow.show-for-medium(ng-click="SessionService.closeModals()")
+		%i.ss-icon.pull-left.ss-delete
+		cancel
+	.billing.modal-body(ng-controller="market.modals.AddCardController"){:"ng-init"=> "choose_plan = #{ (current_user.plan.name != 'Collabarator').to_s }"}
+		.grid-container
+			.grid-x.grid-padding-x
+				.cell.small-12.medium-12.large-10.large-offset-1
+					.grid-x.m-top-20
+						.cell.small-12.text-center
+							%h4.m-0
+								%span.close-button-mini.hide-for-medium.padding-top-5.text-green(ng-click="SessionService.closeModals()")
+									%i.ss-icon.pull-left.ss-delete
+								%strong.ng-cloak(ng-if="!choose_plan")
+									Manage Your Account Plan & Subscription
+								%strong.ng-cloak(ng-if="choose_plan")
+									Hi #{ current_user.full_name }, let's
+									- if current_user.plan && current_user.plan.name == 'Collabarator'
+										start by choosing a plan
+									- else
+										update your plan.
+							%p.ng-cloak(ng-show="choose_plan") To be able to publish a listing, you need to activate one of the plans below
+							%p.ng-cloak(ng-show="!choose_plan")
+								%i.flaticon-check.text-green
+								All new subscriptions include a 30-day money back guarantee.
+					.grid-x.grid-margin-x.m-top-50(ng-show="choose_plan")
+						- current_site.plans.where(active:true).where('amount > 0').order(:amount).limit(3).each do |plan|
+							.medium-4.cell
+								.card.card-plan{class: plan.recommended ? 'active' : nil}
+									.card-heading
+										%h3 #{ plan.name.upcase }
+										.plan-price
+											%sup $
+											%span.text-blue #{ plan.amount/100.00 }
+											\/ mo
+									.card-body
+										%ul.plan-list
+											%li.text-green Up to #{ pluralize(plan.metadata["listings"], 'listing') }
+											%li 24/7 Support
+											%li Cancel Whenever
+										%a.button{class: plan == current_user.plan ? nil : 'success', :'ng-click' => "plan_id = #{plan.id};choose_plan = false"}
+											- if plan == current_user.plan
+												Keep Current Plan
+											- else
+												Choose This Plan
+											%i.flaticon-long-arrow-right
+										- if plan.recommended
+											.recommended
+												%i.flaticon-recommended
+												Recommended
+						- if current_user.plan && current_user.plan.amount > 0
+							.small-12.cell.text-center
+								.lead
+									Looking to cancel your plan?
+									%br.hide-for-medium
+									%a.underline{data: {method:"PATCH"}, href: account_billing_path.add_param_to_uri('plan_id', current_site.plans.where(active:true).where('amount <= 0').first.id)}
+										Switch to the free "#{ current_site.plans.where(active:true).where('amount <= 0').first.name }" plan.
+						- else
+							.small-12.cell.text-center
+								.lead
+									Find the plan that’s right for you.
+									%br.hide-for-medium
+									Everyone starts with a 30-day free trial.
+
+					.grid-x.grid-margin-x.m-top-20(ng-show="!choose_plan")
+						.cell.m-top-20.small-12.medium-4
+							.grid-x.cell.small-10.medium-12
+								- current_site.plans.where(active:true).where('amount > 0').order(:amount).limit(3).each do |plan|
+									.medium-12.cell.ng-cloak{:'ng-show' => "!choose_plan && plan_id == #{plan.id}"}
+										.card.card-plan.active
+											.card-heading
+												%h3 #{ plan.name.upcase }
+												.plan-price
+													%sup $
+													%span.text-blue #{ plan.amount/100.00 }
+													\/ mo
+											.card-body
+												%ul.plan-list
+													%li.text-green Up to #{ pluralize(plan.metadata["listings"], 'listing') }
+													%li 24/7 Support
+													%li Cancel Whenever
+												%a.button.success.cell(ng-click="choose_plan = true")
+													Change Plan
+													%i.flaticon-long-arrow-right
+							.cell.security.small-12.m-top-0.text-center
+								.security.text-green
+									%span.ss-icon check
+									%strong 30-day money back guarantee
+								.security.text-green
+									%span.ss-icon check
+									%strong Cancel whenever
+						.cell.m-top-20.small-12.medium-8
+							- if !current_user.card_type.blank?
+								.well.z.radius.card(ng-click="use_existing_card = true")
+									%section.new-payment-info.m0
+										.grid-x.grid-margin-x
+											.cell.auto
+												%label.radio-custom.m0
+													%input(type="radio" name="use_existing_card" value="1" id="use_existing_card" ng-checked="use_existing_card"){:'ng-init' => 'use_existing_card = true'}
+													%span.m-top-5 Use Your #{ current_user.card_type } Ending In #{ current_user.card_last_4 }
+													%span.tick
+							.well.z.radius.card(ng-class="new_card.type" ng-click="use_existing_card = false")
+								%section.new-payment-info.m0
+									.grid-x.grid-margin-x
+										.cell.auto
+											%label.radio-custom.cell
+												%input(type="radio" name="use_existing_card" value="0" id="use_existing_card" ng-checked="!use_existing_card"){:'ng-init' => "use_existing_card = #{ current_user.card_type.blank? ? false : true }"}
+												%span Add New Payment Method
+												%span.tick
+								%section.new-payment-info.m-top-10(ng-class="{ disabled: use_existing_card }")
+									.grid-x.grid-margin-x
+										.cell.small-12(ng-if="stripe_error_message")
+											%strong.small.error {{ stripe_error_message }}
+										.cell.small-8
+											%label.secondary Name on card
+										.cell.small-4
+											%label.secondary Postal Code
+										.cell.small-8
+											%input.radius(type="text" data-stripe="name" ng-model="card.name" placeholder="Ex. John Doe")
+										.cell.small-4
+											%input.radius(type="text" data-stripe="address_zip" ng-model="card.address_zip" placeholder="12345")
+										.cell.small-12
+											%label.secondary Billing Address
+										.cell.small-12
+											%input.radius(type="text" name="address" ng-model="card.address_line1" placeholder="123 Main St. Utopia, Region")
+										.cell.small-12
+											%label.secondary Card Number (no spaces or dashes)
+										.cell.small-12
+											%input.radius(type="text" data-stripe="number" ng-model="card.number" ng-keyup="validateCard()" size="20" placeholder="0123XXXXXXXXXXXXXXXX")
+										.cell.small-8
+											%label.secondary Expiration
+										.cell.small-4
+											%label.secondary CVC
+										.cell.small-4
+											%input.radius(type="text" data-stripe="exp_month" ng-model="card.exp_month" size="2" maxlength="2" placeholder="MM")
+										.cell.small-4
+											%input.radius(type="text" data-stripe="exp_year" ng-model="card.exp_year" size="2" maxlength="2" placeholder="YY")
+										.cell.small-4
+											%input.radius(type="text" data-stripe="cvc" ng-model="card.cvc" size="4" placeholder="123")
+								.grid-x.security.m-top-20
+									.cell.small-12
+										%small.pull-left.text-muted
+											%span.ss-icon lock
+											Bank Level Encryption
+										%a.stripe-logo.float-right(href="https://www.stripe.com" target="_blank")
+											= image_tag('powered_by_stripe.png', width: 120)
+			.grid-x.grid-margin-x.m-top-0.modal-footer
+				.cell.small-12.large-10.text-right.large-offset-1(ng-show="!choose_plan")
+					%button.magic-button.float-right(ng-click="saveCard()" ng-disabled="processing" ng-class="processing ? 'ellipsis primary' : 'secondary'")
+						{{ processing ? 'Verifying Payment Information' : 'Start Subscription & Add Card' }}
+				.cell.m-top-20
+				.large-4.cell.m-top-20
+					.feature-item
+						.media-object
+							.media-object-section
+								%img{:src => asset_path("icon-01.png")}/
+							.media-object-section
+								%h4 Its Ultra - Fast!
+								%p You can post your listing in minutes. All we need is a few details about what you're selling.
+				.large-4.cell.m-top-20
+					.feature-item
+						.media-object
+							.media-object-section
+								%img{:src => asset_path("icon-02.png")}/
+							.media-object-section
+								%h4 Its Safer!
+								%p Our network helps to keep your personal details secure. Shielded from reaching third parties.
+				.large-4.cell.m-top-20
+					.feature-item
+						.media-object
+							.media-object-section
+								%img{:src => asset_path("icon-03.png")}/
+							.media-object-section
+								%h4 Save With Us!
+								%p Our premium classifieds weed out the clutter so you can save time & money on promoting your listing.

@@ -1,0 +1,102 @@
+angular.module('market')
+
+	.controller('market.account.PostFormController', function ($scope, Restangular, SessionService, Upload, $timeout, $http, ScrollTo, $sce) {
+
+		$scope.photosUploading = 0;
+		$scope.submittingForm = false;
+
+		// Initialize Quill editor
+	  $scope.quill = new Quill('#post_editor', {
+	    theme: 'snow',
+			// modules: {
+				// toolbar: [[{ size: [ 'small', false, 'large', 'huge' ]}], ['bold','italic','underline'],['link','image']]
+			// }
+	  });
+
+		// ====================================================
+		// FORM SUBMIT HANDLER
+		// ====================================================
+
+		// upload later on form submit or something similar
+		$scope.submit = function(event) {
+			$scope.submittingForm = true;
+			document.getElementById("postForm").submit();
+		};
+
+		// ====================================================
+		// PHOTO UPLOADER HELPERS
+		// ====================================================
+
+		$scope.deletePhoto = function (photo) {
+			var index = $scope.post.photos.indexOf(photo);
+			if (index > -1) $scope.post.photos.splice(index, 1);
+			var photo = Restangular.restangularizeElement(null, photo, 'photos');
+			photo.remove();
+		}
+
+		$scope.initSortable = function () {
+			$(".sortable").sortable({
+				update: function (event, ui) {
+					var photos = _.map($('[name="photos[photo_ids][]"]'), function (item) {
+						return _.select($scope.post.photos, function(i) { return i.id == parseInt(item.value) })[0];
+					});
+
+					$timeout(function(){
+						$scope.post.photos = photos;
+					});
+				}
+			})
+		}
+
+		$scope.uploadFiles = function(files) {
+			if (!$scope.post.photos) $scope.post.photos = [];
+
+			_.each(files, function(file) {
+        // Photo uploader queue status
+				$scope.photosUploading = $scope.photosUploading + 1;
+
+				// Creating a stub photos object file.
+				var photo = Restangular.restangularizeElement(null, { file: file }, 'photos');
+
+				// Save photo to retrieve aws upload keys.
+				photo.save().then(function(response){
+					var element = photo;
+
+					angular.merge(element, response);
+
+					$timeout(function(){
+						element.showLoader = true;
+					}, 1000);
+
+					Upload.upload({
+						url: "https://<%= ENV['AWS_S3_BUCKET'] %>.s3.amazonaws.com/", //S3 upload url including bucket name
+						method: 'POST',
+						data: {
+							"key": element.buckets.original["key"],
+							"success_action_status": element.buckets.original["success_action_status"],
+							"acl": element.buckets.original["acl"],
+							"policy": element.buckets.original["policy"],
+							"x-amz-credential": element.buckets.original["x-amz-credential"],
+							"x-amz-algorithm": element.buckets.original["x-amz-algorithm"],
+							"x-amz-date": element.buckets.original["x-amz-date"],
+							"x-amz-signature": element.buckets.original["x-amz-signature"],
+							file: file
+						}
+					}).then(function (success) {
+						element.uploaded = true;
+						element.progressPercentage = 100.0;
+						$scope.quill.insertEmbed(0, 'image', element.url);
+						$scope.photosUploading = $scope.photosUploading - 1;
+						element.save()
+					}, function (error) {
+						console.log('Error status: ' + error.status);
+					}, function (event) {
+						element.progressPercentage = parseInt(100.0 * event.loaded / event.total);
+						console.log(element.progressPercentage);
+					});
+				});
+
+				$scope.post.photos.push(photo);
+			});
+		}
+	});

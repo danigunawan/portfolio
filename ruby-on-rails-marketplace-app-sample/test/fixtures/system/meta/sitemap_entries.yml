@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  site_id: 
+  path: MyString
+  indexed: false
+
+two:
+  site_id: 
+  path: MyString
+  indexed: false

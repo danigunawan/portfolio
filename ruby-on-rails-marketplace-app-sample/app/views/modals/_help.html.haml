@@ -1,0 +1,59 @@
+%script(type="text/ng-template" id="help.html")
+	%button.close-button.button.hollow.show-for-medium(ng-click="SessionService.closeModals()")
+		%i.ss-icon.pull-left.ss-delete
+		cancel
+	.billing.contact.modal-body
+		.grid-container
+			.grid-x.grid-padding-x
+				.cell.small-12.medium-12.large-10.large-offset-1
+					= form_tag support_tickets_path, method: :post, class: 'grid-x grid-padding-x' do
+						.cell.small-12.medium-8.medium-offset-2
+							.grid-x.grid-margin-x
+								.cell.small-12.m-top-20.text-center
+									%h4
+										%span.close-button-mini.hide-for-medium.padding-top-5.text-green(ng-click="SessionService.closeModals()")
+											%i.ss-icon.pull-left.ss-delete
+										%strong Need some help?
+										%strong.text-green Send us a message below.
+								.cell.small-12.m-top-20.well
+									%label 1. What's your name?
+									%input.large(type="text" placeholder="What is your name?" name="support_ticket[name]"){value: current_user ? current_user.full_name : ''}
+								.cell.small-12.m-top-10.well
+									%label 2. What email can we reach you at?
+									%input.large(type="text" placeholder="Email Address" name="support_ticket[reply_to]"){value: current_user ? current_user.email : ''}
+								.cell.small-12.m-top-10.well
+									%label 3. How may we be of service?
+									%textarea.input-nob(placeholder="Ex: I can't log in to my account..." name="support_ticket[message]")
+								.cell.m-top-10.text-center
+									%button.expand.large.magic-button(type="submit")
+										Send Message
+								.cell.m-top-10.text-center
+
+				.large-12.cell.m-top-50.text-center
+					.logo
+						%a.logo{:href => root_path}
+							#{ current_site.name }
+				- if false
+					%br
+					%h5
+						Frequently Asked Questions
+					.large-4.cell.m-top-20
+						%h4
+							%strong.text-green How do I close my account?
+						%p
+							Contact us in the form above and let us know how we may be of service.
+
+					.large-4.cell.m-top-20
+						%h4
+							%strong.text-green I need to update my listing how do I do that?
+						%p
+							Go to your
+							%a{href: account_listings_path, target: '_blank'} my listings
+							page in the account navigation bar.
+							There click the 'Edit Listing' button below the listing you would like to edit.
+							Complete the steps and click save when ready to change your information.
+
+					.large-4.cell.m-top-20
+						%h4
+							%strong.text-green Can you fix an incorrect charge on my credit card?
+						%p Yes, if you experience an issue with a payment, let us know! Contact us as soon as possible so we can begin to resolve your issue!

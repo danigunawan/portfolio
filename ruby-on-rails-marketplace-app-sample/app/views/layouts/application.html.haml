@@ -1,0 +1,102 @@
+!!!
+%html{:lang => "en"}
+	%head
+		%meta{charset: "utf-8"}/
+		%meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+		%base{ href: "/" }
+		%title
+			#{ title ||= (content_for?(:title) ? yield(:title) : current_site.name) }
+		%link(rel="icon" type="image/png"){ href: current_site.settings['FAVICON_IMAGE_URL'] ? current_site.settings['FAVICON_IMAGE_URL'] : image_url("app-icon-#{current_site.name.downcase.at(0)}.png") }/
+		%link(href='https://fonts.googleapis.com/css?family=Nunito:400,600,800,900' rel='stylesheet' type='text/css')
+		%link(href="https://fonts.googleapis.com/css?family=Arvo" rel="stylesheet")
+		%meta{content: "IE=edge", "http-equiv" => "X-UA-Compatible"}/
+		%meta{content: "width=device-width, initial-scale=1", name: "viewport"}/
+		%meta{content: description(yield(:description)), name: "description" }/
+		%meta{content: keywords(yield(:keywords)), name: "keywords" }/
+		%meta{name: "google-site-verification", content: current_site.settings['GOOGLE_SITE_VERIFICATION']}/
+
+		= yield :canonical
+		= csrf_meta_tags
+		= stylesheet_link_tag "application", media: "all",  type: "text/css", 'data-turbolinks-track' => true
+		= render "layouts/ads/carbon_header_tag"
+		= render "layouts/global_rich_snippets"
+		= render 'layouts/footer_scripts'
+		= render "layouts/analytics"
+	- has_notifications = flash[:notice_error] || flash[:notice_success] || flash[:notice_warning] || (current_user && !current_user.confirmed?)
+	%body.grid-y.align-stretch(ng-app="market"){class: has_notifications ? 'has-notifications' : nil}
+		.notifications
+			- if flash[:notice_error]
+				.callout.small.alert.marquee
+					= flash[:notice_error].html_safe
+			- elsif flash[:notice_success]
+				.callout.small.success.marquee
+					= flash[:notice_success].html_safe
+			- elsif current_user && !current_user.confirmed?
+				.callout.small.success.marquee
+					%span
+						%strong
+							Hi, #{ current_user.full_name }!
+						Welcome aboard!
+						We've sent you email confirmation instructions.
+						%a(data-method="POST"){href: confirmation_path(current_user)} Resend Instructions
+			- elsif !current_site.env["headliner"].blank?
+				.callout.small.success.marquee
+					= current_site.env("headliner").html_safe
+		.body-content.cell.auto
+			= content_for?(:content) ? yield(:content) : yield
+			- if content_for?(:footer_button)
+				= yield(:footer_button)
+		= yield(:modals)
+		- session['last_invited_to_sell'] ||= 1.years.ago
+		- if false && session['last_invited_to_sell'] < 30.days.ago
+			- session['last_invited_to_sell'] = Time.now
+			.grid-y.sell-overlay.overlay-animation(ng-class="hideSellOverlay ? 'collapse' : ''")
+				.cell.small-shrink.light-gray-card.text-center
+					.sell-overlay-inner-container
+						%h1.m-top-50
+							%strong.logo #{ current_site.name }
+						%h2.m-top-20
+							%strong Do you have anything for sale?
+						%h4.m-top-20
+							%a.button.large.success
+								%strong Create Your Free Listing Now
+							%br
+							%br
+							%strong.text-green Reach more potential buyers. For free.
+						%p.text-muted
+							Every day people come to #{ current_site.name }
+							%br.hide-for-medium
+							looking to buy local.
+							%br.hide-for-medium
+							%strong List within a few minutes.
+						.m-top-30
+						.grid-container
+							.grid-x.grid-padding-x
+								.large-4.medium-6.cell
+									.feature-item
+										.media-object
+											.media-object-section.show-for-medium
+												%img{:src => asset_path("icon-01.png")}/
+											.media-object-section
+												%h4 Its Ultra - Fast!
+												%p You can post your listing in minutes. All we need is a few details about what you're selling.
+								.large-4.medium-6.cell
+									.feature-item
+										.media-object
+											.media-object-section.show-for-medium
+												%img{:src => asset_path("icon-02.png")}/
+											.media-object-section
+												%h4 Its Safer!
+												%p Our network helps to keep your personal details secure. Shielded from reaching third parties.
+								.large-4.medium-6.large-offset-0.medium-offset-3.cell
+									.feature-item
+										.media-object
+											.media-object-section.show-for-medium
+												%img{:src => asset_path("icon-03.png")}/
+											.media-object-section
+												%h4 It's Free!
+												%p Save money and grow your business! Our classifieds help get the word out to local searchers.
+					%span.call-button.button.secondary(ng-click="hideSellOverlay = true") No Thanks, Just Looking
+		- if current_user
+			= render "modals/subscription"
+		= render "modals/help"
