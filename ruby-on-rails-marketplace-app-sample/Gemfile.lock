@@ -354,7 +354,7 @@ GEM
     public_suffix (2.0.5)
     puma (3.9.1)
     quilljs-rails (0.0.4)
-    rack (1.6.8)
+    rack (1.6.12)
     rack-livereload (0.3.16)
       rack
     rack-pjax (1.0.0)
